@@ -25,73 +25,31 @@
         {{ score }}%
       </div>
 
-      <!-- Score Analytics -->
       <ScoreAnalytics v-if="analytics && Object.keys(analytics).length > 0" :analytics="analytics" />
 
-      <!-- Review All Questions -->
       <ReviewAccordion 
         v-if="allQuestionsReview && allQuestionsReview.length > 0" 
         :questions="allQuestionsReview" 
       />
 
-      <!-- Passed Section -->
-      <template v-if="passed">
-        <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-8 text-left">
-          <p class="text-green-700 font-bold">
-            Congratulations! You passed the assessment.
-          </p>
-          <p class="text-green-600 text-sm">
-            Please upload your resume to complete the application.
-          </p>
-        </div>
+      <ResumeUpload
+        v-if="passed"
+        :is-processing="uploadForm.processing"
+        @submit="uploadResume"
+        @file-change="handleFileChange"
+      />
 
-        <form @submit.prevent="uploadResume" class="mt-6">
-          <div class="mb-4">
-            <input
-              type="file"
-              @change="handleFileChange"
-              accept=".pdf,.doc,.docx"
-              required
-              class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
-            />
-            <p class="text-xs text-gray-400 mt-2">
-              Accepted formats: PDF, DOC, DOCX (Max 2MB)
-            </p>
-          </div>
-
-          <button
-            type="submit"
-            :disabled="uploadForm.processing"
-            class="w-full bg-blue-600 text-white py-2 rounded font-bold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {{ uploadForm.processing ? 'Uploading...' : 'Upload Resume' }}
-          </button>
-        </form>
-      </template>
-
-      <!-- Failed Section -->
-      <template v-else>
-        <div class="bg-red-50 border-l-4 border-red-400 p-4 text-left">
-          <p class="text-red-700 font-bold">
-            Thank you for your interest.
-          </p>
-          <p class="text-red-600 text-sm">
-            Unfortunately, your score did not meet the required threshold. Please try again later.
-          </p>
-        </div>
-
-        <Link href="/" class="mt-6 inline-block text-blue-600 hover:underline">
-          Return to Home
-        </Link>
-      </template>
+      <FailedMessage v-else />
     </div>
   </div>
 </template>
 
 <script setup>
-import { useForm, Link } from '@inertiajs/vue3'
+import { useForm } from '@inertiajs/vue3'
 import ScoreAnalytics from '@/Components/Result/ScoreAnalytics.vue'
 import ReviewAccordion from '@/Components/Result/ReviewAccordion.vue'
+import ResumeUpload from '@/Components/Result/ResumeUpload.vue'
+import FailedMessage from '@/Components/Result/FailedMessage.vue'
 
 const props = defineProps({
   score: Number,
