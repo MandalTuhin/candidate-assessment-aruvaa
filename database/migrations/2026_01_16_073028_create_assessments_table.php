@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('assessments', function (Blueprint $table) {
             $table->id();
+            $table->string('candidate_name');
+            $table->string('candidate_email');
+            $table->integer('score')->default(0); // Their final score 
+            $table->foreignId('resume_path')->nullable();
             $table->timestamps();
         });
     }
