@@ -73,7 +73,7 @@
                         <button
                             type="button"
                             @click="navigateToQuestion(index)"
-                            class="aspect-square rounded-lg font-bold text-xs sm:text-sm transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-400 touch-manipulation"
+                            class="aspect-square rounded-lg font-bold text-xs sm:text-sm transition-all duration-200 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-400 touch-manipulation"
                             :class="{
                                 'bg-blue-600 text-white shadow-md': currentQuestionIndex === index,
                                 'bg-green-500 text-white': currentQuestionIndex !== index && question.selectedAnswer,
