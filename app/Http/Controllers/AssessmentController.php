@@ -53,4 +53,47 @@ class AssessmentController extends Controller
         // 4. Pass the questions to a new view
         return view('assessment', compact('questions'));
     }
+
+    public function submitTest(Request $request)
+    {
+        // Get user answers from the request
+        $userAnswers = $request->input('answers', []); // format: [question_id => selected_option]
+
+        // Fetch the actual questions to compare answers
+        $questionIds = array_keys($userAnswers);
+        $questions = \App\Models\Question::whereIn('id', $questionIds)->get();
+
+        $totalQuestions = $questions->count();
+        $correctCount = 0;
+
+        // Compare answers
+        foreach ($questions as $question) {
+            $submittedAnswer = $userAnswers[$question->id] ?? null;
+            if ($submittedAnswer === $question->correct_answer) {
+                $correctCount++;
+            }
+        }
+
+        // Calculate score (Percentage)
+        $score = $totalQuestions > 0 ? round(($correctCount / $totalQuestions) * 100) : 0;
+
+        // Save the attempt to the database (Assessment Model)
+        // For now, Use 'Guest' as the name/email form is not built yet
+        $assessment = \App\Models\Assessment::create([
+            'candidate_name' => 'Guest Candidate',
+            'candidate_email' => 'guest@example.com',
+            'score' => $score,
+        ]);
+
+        // 6. Store score in session to show on result page
+        session(['last_score' => $score, 'assessment_id' => $assessment->id]);
+
+        return redirect()->route('test.result');
+    }
+
+    public function showResult()
+    {
+        $score = session('last_score', 0);
+        return "Test Submitted! Your Score: " . $score . "%";
+    }
 }

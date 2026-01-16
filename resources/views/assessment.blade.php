@@ -10,7 +10,7 @@
         <div class="max-w-3xl mx-auto bg-white p-6 rounded shadow">
             <h1 class="text-2xl font-bold mb-6">Technical Assessment</h1>
 
-            <form action="#" method="POST">
+            <form action="{{ route('test.submit') }}" method="POST">
                 @csrf @foreach($questions as $index => $question)
                 <div class="mb-8 p-4 border-l-4 border-blue-500 bg-gray-50">
                     <p class="font-bold text-lg">

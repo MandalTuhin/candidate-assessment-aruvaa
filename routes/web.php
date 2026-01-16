@@ -10,3 +10,9 @@ Route::post('/start-test', [AssessmentController::class, 'startTest'])->name('te
 
 // The page where the questions are displayed
 Route::get('/assessment', [AssessmentController::class, 'showTest'])->name('test.show');
+
+// Routing to submit the test and get the results
+Route::post('/submit-test', [AssessmentController::class, 'submitTest'])->name('test.submit');
+
+// Route for showing the result
+Route::get('/result', [AssessmentController::class, 'showResult'])->name('test.result');
