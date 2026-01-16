@@ -14,7 +14,9 @@ class AssessmentController extends Controller
     {
         $languages = Language::all();
 
-        return view('welcome', compact('languages'));
+        return inertia('Welcome', [
+            'languages' => $languages,
+        ]);
     }
 
     /**
@@ -75,8 +77,12 @@ class AssessmentController extends Controller
             ];
         })->values();
 
-        // 4. Pass the questions to a new view
-        return view('assessment', compact('questions', 'questionsData'));
+        // 4. Pass the questions to Inertia
+        return inertia('Assessment', [
+            'questionsData' => $questionsData,
+            'candidateName' => session('candidate_name'),
+            'candidateEmail' => session('candidate_email'),
+        ]);
     }
 
     public function submitTest(Request $request)
@@ -165,7 +171,14 @@ class AssessmentController extends Controller
 
         $passed = $score >= $threshold;
 
-        return view('result', compact('score', 'passed', 'assessmentId', 'analytics', 'allQuestionsReview'));
+        return inertia('Result', [
+            'score' => $score,
+            'passed' => $passed,
+            'assessmentId' => $assessmentId,
+            'analytics' => $analytics,
+            'allQuestionsReview' => $allQuestionsReview,
+            'candidateName' => session('candidate_name'),
+        ]);
     }
 
     public function uploadResume(Request $request)
