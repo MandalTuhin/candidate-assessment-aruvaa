@@ -7,7 +7,7 @@
         <script src="https://cdn.tailwindcss.com"></script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4" x-data="{ openItems: {} }">
         <div
             class="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl text-center"
         >
@@ -74,19 +74,36 @@
             @if(!empty($wrongAnswers) && count($wrongAnswers) > 0)
             <div class="mb-8 bg-gray-50 p-6 rounded-lg border border-gray-200 text-left">
                 <h2 class="text-xl font-bold mb-4 text-gray-800">Review Wrong Answers</h2>
-                <div class="space-y-6">
+                <div class="space-y-3">
                     @foreach($wrongAnswers as $index => $wrongAnswer)
-                    <div class="bg-white p-4 rounded-lg border-l-4 border-red-500 shadow-sm">
-                        <div class="flex items-start justify-between mb-2">
-                            <p class="font-bold text-lg text-gray-800 flex-1">
-                                Question {{ $index + 1 }}: {{ $wrongAnswer['question_text'] }}
-                            </p>
-                        </div>
-                        <span class="text-sm text-blue-600 font-mono mb-3 inline-block">
-                            [{{ $wrongAnswer['language_name'] }}]
-                        </span>
-                        
-                        <div class="mt-3 space-y-2">
+                    <div class="bg-white rounded-lg border-l-4 border-red-500 shadow-sm overflow-hidden">
+                        <button
+                            @click="openItems[{{ $index }}] = !openItems[{{ $index }}]"
+                            class="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
+                        >
+                            <div class="flex-1">
+                                <p class="font-bold text-lg text-gray-800">
+                                    Question {{ $index + 1 }}: {{ $wrongAnswer['question_text'] }}
+                                </p>
+                                <span class="text-sm text-blue-600 font-mono">
+                                    [{{ $wrongAnswer['language_name'] }}]
+                                </span>
+                            </div>
+                            <svg
+                                class="w-5 h-5 text-gray-500 transition-transform"
+                                :class="{ 'rotate-180': openItems[{{ $index }}] }"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div
+                            x-show="openItems[{{ $index }}]"
+                            x-collapse
+                            class="px-4 pb-4 space-y-2"
+                        >
                             <div class="p-3 bg-red-50 border border-red-200 rounded">
                                 <span class="text-sm font-medium text-red-700">Your Answer:</span>
                                 <span class="ml-2 text-red-800 font-semibold">{{ $wrongAnswer['user_answer'] }}</span>
