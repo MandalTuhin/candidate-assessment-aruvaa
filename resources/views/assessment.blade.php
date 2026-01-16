@@ -9,7 +9,22 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="bg-gray-100 p-4 md:p-8" x-data="assessmentData()" x-init="init()">
-        <div class="max-w-3xl mx-auto bg-white p-6 rounded shadow">
+        <!-- Loading Overlay -->
+        <div 
+            x-show="isPageLoading" 
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            style="display: none;"
+        >
+            <div class="bg-white p-6 rounded-lg shadow-lg flex items-center gap-3">
+                <svg class="animate-spin h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="text-lg font-medium text-gray-700">Loading assessment...</span>
+            </div>
+        </div>
+
+        <div class="max-w-3xl mx-auto bg-white p-6 rounded shadow" :class="{ 'opacity-50 pointer-events-none': isPageLoading }">
             <!-- Header -->
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b pb-4 gap-4">
                 <div>
@@ -135,9 +150,15 @@
                         <button
                             type="button"
                             @click="submitTest()"
-                            class="bg-red-600 text-white px-6 py-2 rounded font-bold hover:bg-red-700 transition-colors"
+                            :disabled="isSubmitting"
+                            class="bg-red-600 text-white px-6 py-2 rounded font-bold hover:bg-red-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Submit Test
+                            <svg x-show="isSubmitting" class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span x-show="!isSubmitting">Submit Test</span>
+                            <span x-show="isSubmitting">Submitting...</span>
                         </button>
                     </div>
 
@@ -171,13 +192,23 @@
                     timerInterval: null,
                     timeLimit: 300, // 5 minutes total
                     isLoading: false,
+                    isSubmitting: false,
+                    isPageLoading: true,
 
                     init() {
-                        // Questions already have selectedAnswer from saved progress (if any)
-                        // Start global timer (doesn't reset between questions)
-                        this.startTimer();
-                        // Save initial progress
-                        this.saveProgress();
+                        // Show loading overlay initially
+                        this.isPageLoading = true;
+                        
+                        // Simulate initial load time (or remove if not needed)
+                        setTimeout(() => {
+                            // Questions already have selectedAnswer from saved progress (if any)
+                            // Start global timer (doesn't reset between questions)
+                            this.startTimer();
+                            // Save initial progress
+                            this.saveProgress().then(() => {
+                                this.isPageLoading = false;
+                            });
+                        }, 300);
                     },
 
                     get currentQuestion() {
@@ -233,7 +264,7 @@
                             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
                                              document.querySelector('input[name="_token"]')?.value;
 
-                            await fetch('{{ route("progress.save") }}', {
+                            const response = await fetch('{{ route("progress.save") }}', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
@@ -242,8 +273,16 @@
                                 },
                                 body: JSON.stringify({ answers })
                             });
+
+                            if (!response.ok) {
+                                throw new Error('Failed to save progress');
+                            }
+
+                            return await response.json();
                         } catch (error) {
                             console.error('Failed to save progress:', error);
+                            // Don't throw - allow navigation to continue even if save fails
+                            return { success: false };
                         }
                     },
 
@@ -271,10 +310,20 @@
                         return `${mins}:${secs.toString().padStart(2, '0')}`;
                     },
 
-                    submitTest() {
+                    async submitTest() {
+                        if (this.isSubmitting) {
+                            return; // Prevent double submission
+                        }
+
+                        this.isSubmitting = true;
+
                         if (this.timerInterval) {
                             clearInterval(this.timerInterval);
                         }
+
+                        // Save final progress before submitting
+                        await this.saveProgress();
+
                         // Update all hidden inputs before submit
                         this.questions.forEach(question => {
                             const hiddenInput = document.getElementById('answer_' + question.id);
@@ -282,6 +331,8 @@
                                 hiddenInput.value = question.selectedAnswer || '';
                             }
                         });
+
+                        // Submit the form
                         document.getElementById('assessmentForm').submit();
                     }
                 }
