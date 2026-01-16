@@ -57,6 +57,9 @@ class AssessmentController extends Controller
             ->inRandomOrder()
             ->get();
 
+        // Store question IDs in session for analytics calculation
+        session(['test_question_ids' => $questions->pluck('id')->toArray()]);
+
         // Prepare questions data for JavaScript
         $questionsData = $questions->map(function ($q) {
             return [
@@ -78,34 +81,50 @@ class AssessmentController extends Controller
         // Get user answers from the request
         $userAnswers = $request->input('answers', []); // format: [question_id => selected_option]
 
-        // Fetch the actual questions to compare answers
-        $questionIds = array_keys($userAnswers);
-        $questions = \App\Models\Question::whereIn('id', $questionIds)->get();
+        // Get all question IDs from the test (including unanswered ones)
+        $allQuestionIds = session('test_question_ids', []);
+        $questions = \App\Models\Question::whereIn('id', $allQuestionIds)->get();
 
         $totalQuestions = $questions->count();
         $correctCount = 0;
+        $incorrectCount = 0;
+        $skippedCount = 0;
 
-        // Compare answers
+        // Compare answers and calculate analytics
         foreach ($questions as $question) {
             $submittedAnswer = $userAnswers[$question->id] ?? null;
-            if ($submittedAnswer === $question->correct_answer) {
+
+            if ($submittedAnswer === null || $submittedAnswer === '') {
+                $skippedCount++;
+            } elseif ($submittedAnswer === $question->correct_answer) {
                 $correctCount++;
+            } else {
+                $incorrectCount++;
             }
         }
 
-        // Calculate score (Percentage)
+        // Calculate score (Percentage) - based on total questions
         $score = $totalQuestions > 0 ? round(($correctCount / $totalQuestions) * 100) : 0;
 
         // Save the attempt to the database (Assessment Model)
-        // For now, Use 'Guest' as the name/email form is not built yet
         $assessment = \App\Models\Assessment::create([
             'candidate_name' => session('candidate_name'),
             'candidate_email' => session('candidate_email'),
             'score' => $score,
         ]);
 
-        // 6. Store score in session to show on result page
-        session(['last_score' => $score, 'assessment_id' => $assessment->id]);
+        // Store analytics in session for result page
+        session([
+            'last_score' => $score,
+            'assessment_id' => $assessment->id,
+            'analytics' => [
+                'total_questions' => $totalQuestions,
+                'correct' => $correctCount,
+                'incorrect' => $incorrectCount,
+                'skipped' => $skippedCount,
+                'answered' => $correctCount + $incorrectCount,
+            ],
+        ]);
 
         return redirect()->route('test.result');
     }
@@ -114,6 +133,7 @@ class AssessmentController extends Controller
     {
         $score = session('last_score', 0);
         $assessmentId = session('assessment_id');
+        $analytics = session('analytics', []);
 
         // if there is no score in the session. we redirect to home
         if ($score === null) {
@@ -124,7 +144,7 @@ class AssessmentController extends Controller
 
         $passed = $score >= $threshold;
 
-        return view('result', compact('score', 'passed', 'assessmentId'));
+        return view('result', compact('score', 'passed', 'assessmentId', 'analytics'));
     }
 
     public function uploadResume(Request $request)
