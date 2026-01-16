@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>Technical Test</title>
         <script src="https://cdn.tailwindcss.com"></script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -50,20 +51,12 @@
                     <span 
                         class="text-lg font-bold"
                         :class="{
-                            'text-red-600': timeRemaining <= 10,
-                            'text-yellow-600': timeRemaining <= 30 && timeRemaining > 10,
-                            'text-green-600': timeRemaining > 30
+                            'text-red-600': timeRemaining <= 60,
+                            'text-yellow-600': timeRemaining <= 120 && timeRemaining > 60,
+                            'text-green-600': timeRemaining > 120
                         }"
                         x-text="formatTime(timeRemaining)"
                     ></span>
-                </div>
-            </div>
-
-            <!-- Current Score Display (Optional) -->
-            <div class="mb-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <div class="flex justify-between items-center">
-                    <span class="text-sm font-medium text-gray-700">Current Score:</span>
-                    <span class="text-lg font-bold text-blue-600" x-text="calculateCurrentScore() + '%'"></span>
                 </div>
             </div>
 
@@ -123,14 +116,19 @@
                     <button
                         type="button"
                         @click="previousQuestion()"
-                        :disabled="currentQuestionIndex === 0"
-                        class="px-6 py-2 rounded font-bold transition-colors"
+                        :disabled="currentQuestionIndex === 0 || isLoading"
+                        class="px-6 py-2 rounded font-bold transition-colors flex items-center gap-2"
                         :class="{
-                            'bg-gray-300 text-gray-500 cursor-not-allowed': currentQuestionIndex === 0,
-                            'bg-gray-600 text-white hover:bg-gray-700': currentQuestionIndex > 0
+                            'bg-gray-300 text-gray-500 cursor-not-allowed': currentQuestionIndex === 0 || isLoading,
+                            'bg-gray-600 text-white hover:bg-gray-700': currentQuestionIndex > 0 && !isLoading
                         }"
                     >
-                        ← Previous
+                        <svg x-show="isLoading" class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span x-show="!isLoading">← Previous</span>
+                        <span x-show="isLoading">Loading...</span>
                     </button>
 
                     <div class="flex gap-2">
@@ -146,14 +144,19 @@
                     <button
                         type="button"
                         @click="nextQuestion()"
-                        :disabled="currentQuestionIndex === questions.length - 1"
-                        class="px-6 py-2 rounded font-bold transition-colors"
+                        :disabled="currentQuestionIndex === questions.length - 1 || isLoading"
+                        class="px-6 py-2 rounded font-bold transition-colors flex items-center gap-2"
                         :class="{
-                            'bg-gray-300 text-gray-500 cursor-not-allowed': currentQuestionIndex === questions.length - 1,
-                            'bg-blue-600 text-white hover:bg-blue-700': currentQuestionIndex < questions.length - 1
+                            'bg-gray-300 text-gray-500 cursor-not-allowed': currentQuestionIndex === questions.length - 1 || isLoading,
+                            'bg-blue-600 text-white hover:bg-blue-700': currentQuestionIndex < questions.length - 1 && !isLoading
                         }"
                     >
-                        Next →
+                        <span x-show="!isLoading">Next →</span>
+                        <span x-show="isLoading">Loading...</span>
+                        <svg x-show="isLoading" class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
                     </button>
                 </div>
             </form>
@@ -164,18 +167,17 @@
                 return {
                     questions: @json($questionsData),
                     currentQuestionIndex: 0,
-                    timeRemaining: 60, // 60 seconds per question
+                    timeRemaining: 300, // 5 minutes (300 seconds) total for entire test
                     timerInterval: null,
-                    timeLimit: 60,
+                    timeLimit: 300, // 5 minutes total
+                    isLoading: false,
 
                     init() {
-                        // Initialize questions with selectedAnswer property
-                        this.questions = this.questions.map(q => ({
-                            ...q,
-                            selectedAnswer: null
-                        }));
-                        this.timeRemaining = this.timeLimit;
+                        // Questions already have selectedAnswer from saved progress (if any)
+                        // Start global timer (doesn't reset between questions)
                         this.startTimer();
+                        // Save initial progress
+                        this.saveProgress();
                     },
 
                     get currentQuestion() {
@@ -193,19 +195,55 @@
                         if (hiddenInput) {
                             hiddenInput.value = answer;
                         }
+                        // Auto-save progress when answer is selected
+                        this.saveProgress();
                     },
 
-                    nextQuestion() {
+                    async nextQuestion() {
                         if (this.currentQuestionIndex < this.questions.length - 1) {
+                            this.isLoading = true;
+                            // Save progress before navigating
+                            await this.saveProgress();
                             this.currentQuestionIndex++;
-                            this.resetTimer();
+                            this.isLoading = false;
+                            // Timer continues running - no reset
                         }
                     },
 
-                    previousQuestion() {
+                    async previousQuestion() {
                         if (this.currentQuestionIndex > 0) {
+                            this.isLoading = true;
+                            // Save progress before navigating
+                            await this.saveProgress();
                             this.currentQuestionIndex--;
-                            this.resetTimer();
+                            this.isLoading = false;
+                            // Timer continues running - no reset
+                        }
+                    },
+
+                    async saveProgress() {
+                        try {
+                            const answers = {};
+                            this.questions.forEach(q => {
+                                if (q.selectedAnswer) {
+                                    answers[q.id] = q.selectedAnswer;
+                                }
+                            });
+
+                            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
+                                             document.querySelector('input[name="_token"]')?.value;
+
+                            await fetch('{{ route("progress.save") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'Accept': 'application/json'
+                                },
+                                body: JSON.stringify({ answers })
+                            });
+                        } catch (error) {
+                            console.error('Failed to save progress:', error);
                         }
                     },
 
@@ -221,37 +259,16 @@
                         }, 1000);
                     },
 
-                    resetTimer() {
-                        if (this.timerInterval) {
-                            clearInterval(this.timerInterval);
-                        }
-                        this.timeRemaining = this.timeLimit;
-                        this.startTimer();
-                    },
-
                     handleTimeUp() {
                         clearInterval(this.timerInterval);
-                        // Auto-advance to next question or submit if last question
-                        if (this.currentQuestionIndex < this.questions.length - 1) {
-                            this.nextQuestion();
-                        } else {
-                            this.submitTest();
-                        }
+                        // Auto-submit when global timer runs out
+                        this.submitTest();
                     },
 
                     formatTime(seconds) {
                         const mins = Math.floor(seconds / 60);
                         const secs = seconds % 60;
                         return `${mins}:${secs.toString().padStart(2, '0')}`;
-                    },
-
-                    calculateCurrentScore() {
-                        if (this.questions.length === 0) return 0;
-                        const answered = this.questions.filter(q => q.selectedAnswer !== null);
-                        if (answered.length === 0) return 0;
-                        
-                        const correct = answered.filter(q => q.selectedAnswer === q.correct_answer).length;
-                        return Math.round((correct / answered.length) * 100);
                     },
 
                     submitTest() {

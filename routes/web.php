@@ -19,3 +19,6 @@ Route::get('/result', [AssessmentController::class, 'showResult'])->name('test.r
 
 // Route for resume upload
 Route::post('/upload-resume', [AssessmentController::class, 'uploadResume'])->name('resume.upload');
+
+// Route for saving partial progress
+Route::post('/save-progress', [AssessmentController::class, 'saveProgress'])->name('progress.save');

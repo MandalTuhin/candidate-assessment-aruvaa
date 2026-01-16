@@ -60,15 +60,18 @@ class AssessmentController extends Controller
         // Store question IDs in session for analytics calculation
         session(['test_question_ids' => $questions->pluck('id')->toArray()]);
 
+        // Get saved progress from session if exists
+        $savedProgress = session('test_progress', []);
+
         // Prepare questions data for JavaScript
-        $questionsData = $questions->map(function ($q) {
+        $questionsData = $questions->map(function ($q) use ($savedProgress) {
             return [
                 'id' => $q->id,
                 'question_text' => $q->question_text,
                 'options' => $q->options,
                 'correct_answer' => $q->correct_answer,
                 'language_name' => $q->language->name,
-                'selectedAnswer' => null,
+                'selectedAnswer' => $savedProgress[$q->id] ?? null,
             ];
         })->values();
 
@@ -181,5 +184,15 @@ class AssessmentController extends Controller
         }
 
         return back()->with('error', 'File upload failed.');
+    }
+
+    public function saveProgress(Request $request)
+    {
+        $answers = $request->input('answers', []);
+
+        // Save progress to session
+        session(['test_progress' => $answers]);
+
+        return response()->json(['success' => true, 'message' => 'Progress saved']);
     }
 }
