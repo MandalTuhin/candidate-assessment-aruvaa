@@ -25,7 +25,10 @@
                 {{ session("success") }}
             </div>
             @endif
-            <h1 class="text-3xl font-bold mb-4">Your Result</h1>
+            <h1 class="text-3xl font-bold mb-2">Assessment Result</h1>
+            <p class="text-gray-600 mb-4">
+                Prepared for: <strong>{{ session("candidate_name") }}</strong>
+            </p>
 
             <div
                 class="text-6xl font-extrabold mb-6 {{
@@ -66,7 +69,7 @@
                         name="resume"
                         accept=".pdf,.doc,.docx"
                         required
-                        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
                     />
                     <p class="text-xs text-gray-400 mt-2">
                         Accepted formats: PDF, DOC, DOCX (Max 2MB)

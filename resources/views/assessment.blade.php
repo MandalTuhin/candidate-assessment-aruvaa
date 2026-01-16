@@ -8,8 +8,19 @@
     </head>
     <body class="bg-gray-100 p-8">
         <div class="max-w-3xl mx-auto bg-white p-6 rounded shadow">
-            <h1 class="text-2xl font-bold mb-6">Technical Assessment</h1>
-
+            <div class="flex justify-between items-center mb-6 border-b pb-4">
+                <h1 class="text-2xl font-bold text-gray-800">
+                    Technical Assessment
+                </h1>
+                <div class="text-right">
+                    <p class="text-sm font-medium text-gray-600">
+                        Candidate: {{ session("candidate_name") }}
+                    </p>
+                    <p class="text-xs text-gray-400">
+                        {{ session("candidate_email") }}
+                    </p>
+                </div>
+            </div>
             <form action="{{ route('test.submit') }}" method="POST">
                 @csrf @foreach($questions as $index => $question)
                 <div class="mb-8 p-4 border-l-4 border-blue-500 bg-gray-50">

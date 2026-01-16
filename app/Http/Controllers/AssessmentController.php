@@ -23,11 +23,17 @@ class AssessmentController extends Controller
     {
         // Validate: Ensure 'languages' is present, is an array, and has at least 1 item.
         $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
             'languages' => 'required|array|min:1',
         ]);
 
         // Session: Store the IDs so we remember them on the next page.
-        session(['selected_languages' => $request->languages]);
+        session([
+            'candidate_name' => $request->name,
+            'candidate_email' => $request->email,
+            'selected_languages' => $request->languages
+        ]);
 
         // Redirect: Go to the quiz display (we will create this route next).
         return redirect()->route('test.show');
@@ -80,8 +86,8 @@ class AssessmentController extends Controller
         // Save the attempt to the database (Assessment Model)
         // For now, Use 'Guest' as the name/email form is not built yet
         $assessment = \App\Models\Assessment::create([
-            'candidate_name' => 'Guest Candidate',
-            'candidate_email' => 'guest@example.com',
+            'candidate_name' => session('candidate_name'),
+            'candidate_email' => session('candidate_email'),
             'score' => $score,
         ]);
 

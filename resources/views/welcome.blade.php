@@ -42,6 +42,33 @@
                         </label>
                     </div>
                     @endforeach
+
+                    <div class="mb-6 space-y-4">
+                        <div>
+                            <label
+                                class="block text-sm font-medium text-gray-700"
+                                >Full Name</label
+                            >
+                            <input
+                                type="text"
+                                name="name"
+                                required
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+                            />
+                        </div>
+                        <div>
+                            <label
+                                class="block text-sm font-medium text-gray-700"
+                                >Email Address</label
+                            >
+                            <input
+                                type="email"
+                                name="email"
+                                required
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+                            />
+                        </div>
+                    </div>
                 </div>
 
                 <button
