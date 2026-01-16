@@ -161,6 +161,20 @@
                                 </label>
                             </template>
                         </div>
+
+                        <!-- Clear Response Button -->
+                        <div class="mt-3 sm:mt-4" x-show="question.selectedAnswer">
+                            <button
+                                type="button"
+                                @click="clearAnswer(question)"
+                                class="text-xs sm:text-sm text-red-600 hover:text-red-700 font-medium flex items-center gap-1.5 transition-colors touch-manipulation"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                Clear Response
+                            </button>
+                        </div>
                     </div>
                 </template>
 
@@ -263,6 +277,22 @@
                             hiddenInput.value = answer;
                         }
                         // Auto-save progress when answer is selected
+                        this.saveProgress();
+                    },
+
+                    clearAnswer(question) {
+                        question.selectedAnswer = null;
+                        // Update hidden input
+                        const hiddenInput = document.getElementById('answer_' + question.id);
+                        if (hiddenInput) {
+                            hiddenInput.value = '';
+                        }
+                        // Uncheck all radio buttons for this question
+                        const radios = document.querySelectorAll(`input[name="current_answer_${question.id}"]`);
+                        radios.forEach(radio => {
+                            radio.checked = false;
+                        });
+                        // Auto-save progress when answer is cleared
                         this.saveProgress();
                     },
 
