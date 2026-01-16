@@ -59,6 +59,44 @@
                 </div>
             </div>
 
+            <!-- Question MiniMap -->
+            <div class="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs sm:text-sm font-medium text-gray-700">Question Navigator</span>
+                    <span class="text-xs text-gray-500">Click to jump to question</span>
+                </div>
+                <div class="grid grid-cols-5 sm:grid-cols-10 gap-2">
+                    <template x-for="(question, index) in questions" :key="question.id">
+                        <button
+                            type="button"
+                            @click="navigateToQuestion(index)"
+                            class="aspect-square rounded-lg font-bold text-xs sm:text-sm transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-400 touch-manipulation"
+                            :class="{
+                                'bg-blue-600 text-white shadow-md': currentQuestionIndex === index,
+                                'bg-green-500 text-white': currentQuestionIndex !== index && question.selectedAnswer,
+                                'bg-gray-200 text-gray-600 hover:bg-gray-300': currentQuestionIndex !== index && !question.selectedAnswer
+                            }"
+                            :title="'Question ' + (index + 1) + (question.selectedAnswer ? ' (Answered)' : ' (Not answered)')"
+                            x-text="index + 1"
+                        ></button>
+                    </template>
+                </div>
+                <div class="flex flex-wrap gap-3 sm:gap-4 mt-3 text-xs">
+                    <div class="flex items-center gap-1.5">
+                        <div class="w-4 h-4 bg-blue-600 rounded"></div>
+                        <span class="text-gray-600">Current</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <div class="w-4 h-4 bg-green-500 rounded"></div>
+                        <span class="text-gray-600">Answered</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <div class="w-4 h-4 bg-gray-200 rounded"></div>
+                        <span class="text-gray-600">Not Answered</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Timer -->
             <div class="mb-4 sm:mb-6 p-2 sm:p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <div class="flex justify-between items-center">
@@ -245,6 +283,17 @@
                             // Save progress before navigating
                             await this.saveProgress();
                             this.currentQuestionIndex--;
+                            this.isLoading = false;
+                            // Timer continues running - no reset
+                        }
+                    },
+
+                    async navigateToQuestion(index) {
+                        if (index >= 0 && index < this.questions.length && index !== this.currentQuestionIndex) {
+                            this.isLoading = true;
+                            // Save progress before navigating
+                            await this.saveProgress();
+                            this.currentQuestionIndex = index;
                             this.isLoading = false;
                             // Timer continues running - no reset
                         }
