@@ -124,7 +124,7 @@
                                                 [{{ $question['language_name'] }}]
                                             </span>
                                         </div>
-                                        <p class="font-semibold text-sm sm:text-base text-gray-800 break-words">
+                                        <p class="font-semibold text-sm sm:text-base text-gray-800 break-words mt-4">
                                             {{ $question['question_text'] }}
                                         </p>
                                     </div>
