@@ -16,3 +16,6 @@ Route::post('/submit-test', [AssessmentController::class, 'submitTest'])->name('
 
 // Route for showing the result
 Route::get('/result', [AssessmentController::class, 'showResult'])->name('test.result');
+
+// Route for resume upload
+Route::post('/upload-resume', [AssessmentController::class, 'uploadResume'])->name('resume.upload');

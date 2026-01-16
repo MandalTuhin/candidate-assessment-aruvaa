@@ -94,6 +94,42 @@ class AssessmentController extends Controller
     public function showResult()
     {
         $score = session('last_score', 0);
-        return "Test Submitted! Your Score: " . $score . "%";
+        $assessmentId = session('assessment_id');
+
+        // if there is no score in the session. we redirect to home
+        if ($score === null) {
+            return redirect()->route('home');
+        }
+
+        $threshold = 50;
+
+        $passed = $score >= $threshold;
+
+        return view('result', compact('score', 'passed', 'assessmentId'));
+    }
+
+    public function uploadResume(Request $request)
+    {
+        $request->validate([
+            'resume' => 'required|file|mimes:pdf,doc,docx|max:2048',
+            'assessment_id' => 'required|exists:assessments,id',
+        ]);
+
+        if ($request->hasFile('resume')) {
+            // Store the file
+            $path = $request->file('resume')->store('resumes', 'public');
+
+            // Retrieve the specific model instance
+            $assessment = \App\Models\Assessment::findOrFail($request->assessment_id);
+
+            // Update the record
+            $assessment->update([
+                'resume_path' => $path
+            ]);
+
+            return back()->with('success', 'Resume uploaded successfully!');
+        }
+
+        return back()->with('error', 'File upload failed.');
     }
 }
