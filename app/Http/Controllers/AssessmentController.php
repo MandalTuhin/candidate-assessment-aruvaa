@@ -13,6 +13,7 @@ class AssessmentController extends Controller
     public function index()
     {
         $languages = Language::all();
+
         return view('welcome', compact('languages'));
     }
 
@@ -32,7 +33,7 @@ class AssessmentController extends Controller
         session([
             'candidate_name' => $request->name,
             'candidate_email' => $request->email,
-            'selected_languages' => $request->languages
+            'selected_languages' => $request->languages,
         ]);
 
         // Redirect: Go to the quiz display (we will create this route next).
@@ -56,8 +57,20 @@ class AssessmentController extends Controller
             ->inRandomOrder()
             ->get();
 
+        // Prepare questions data for JavaScript
+        $questionsData = $questions->map(function ($q) {
+            return [
+                'id' => $q->id,
+                'question_text' => $q->question_text,
+                'options' => $q->options,
+                'correct_answer' => $q->correct_answer,
+                'language_name' => $q->language->name,
+                'selectedAnswer' => null,
+            ];
+        })->values();
+
         // 4. Pass the questions to a new view
-        return view('assessment', compact('questions'));
+        return view('assessment', compact('questions', 'questionsData'));
     }
 
     public function submitTest(Request $request)
@@ -130,7 +143,7 @@ class AssessmentController extends Controller
 
             // Update the record
             $assessment->update([
-                'resume_path' => $path
+                'resume_path' => $path,
             ]);
 
             return back()->with('success', 'Resume uploaded successfully!');
