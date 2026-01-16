@@ -70,6 +70,38 @@
             </div>
             @endif
 
+            <!-- Review Wrong Answers -->
+            @if(!empty($wrongAnswers) && count($wrongAnswers) > 0)
+            <div class="mb-8 bg-gray-50 p-6 rounded-lg border border-gray-200 text-left">
+                <h2 class="text-xl font-bold mb-4 text-gray-800">Review Wrong Answers</h2>
+                <div class="space-y-6">
+                    @foreach($wrongAnswers as $index => $wrongAnswer)
+                    <div class="bg-white p-4 rounded-lg border-l-4 border-red-500 shadow-sm">
+                        <div class="flex items-start justify-between mb-2">
+                            <p class="font-bold text-lg text-gray-800 flex-1">
+                                Question {{ $index + 1 }}: {{ $wrongAnswer['question_text'] }}
+                            </p>
+                        </div>
+                        <span class="text-sm text-blue-600 font-mono mb-3 inline-block">
+                            [{{ $wrongAnswer['language_name'] }}]
+                        </span>
+                        
+                        <div class="mt-3 space-y-2">
+                            <div class="p-3 bg-red-50 border border-red-200 rounded">
+                                <span class="text-sm font-medium text-red-700">Your Answer:</span>
+                                <span class="ml-2 text-red-800 font-semibold">{{ $wrongAnswer['user_answer'] }}</span>
+                            </div>
+                            <div class="p-3 bg-green-50 border border-green-200 rounded">
+                                <span class="text-sm font-medium text-green-700">Correct Answer:</span>
+                                <span class="ml-2 text-green-800 font-semibold">{{ $wrongAnswer['correct_answer'] }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
             @if($passed)
             <div
                 class="bg-green-50 border-l-4 border-green-400 p-4 mb-8 text-left"

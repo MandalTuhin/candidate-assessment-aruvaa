@@ -89,6 +89,7 @@ class AssessmentController extends Controller
         $correctCount = 0;
         $incorrectCount = 0;
         $skippedCount = 0;
+        $wrongAnswers = [];
 
         // Compare answers and calculate analytics
         foreach ($questions as $question) {
@@ -100,6 +101,14 @@ class AssessmentController extends Controller
                 $correctCount++;
             } else {
                 $incorrectCount++;
+                // Store wrong answer details for review
+                $wrongAnswers[] = [
+                    'question_text' => $question->question_text,
+                    'language_name' => $question->language->name,
+                    'user_answer' => $submittedAnswer,
+                    'correct_answer' => $question->correct_answer,
+                    'options' => $question->options,
+                ];
             }
         }
 
@@ -124,6 +133,7 @@ class AssessmentController extends Controller
                 'skipped' => $skippedCount,
                 'answered' => $correctCount + $incorrectCount,
             ],
+            'wrong_answers' => $wrongAnswers,
         ]);
 
         return redirect()->route('test.result');
@@ -134,6 +144,7 @@ class AssessmentController extends Controller
         $score = session('last_score', 0);
         $assessmentId = session('assessment_id');
         $analytics = session('analytics', []);
+        $wrongAnswers = session('wrong_answers', []);
 
         // if there is no score in the session. we redirect to home
         if ($score === null) {
@@ -144,7 +155,7 @@ class AssessmentController extends Controller
 
         $passed = $score >= $threshold;
 
-        return view('result', compact('score', 'passed', 'assessmentId', 'analytics'));
+        return view('result', compact('score', 'passed', 'assessmentId', 'analytics', 'wrongAnswers'));
     }
 
     public function uploadResume(Request $request)
