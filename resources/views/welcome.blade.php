@@ -7,9 +7,9 @@
         <script src="https://cdn.tailwindcss.com"></script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="bg-gray-100 min-h-screen flex items-center justify-center">
-        <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-            <h1 class="text-2xl font-bold mb-6 text-center text-gray-800">
+    <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-md w-full max-w-md">
+            <h1 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-center text-gray-800">
                 Select Programming Languages
             </h1>
 

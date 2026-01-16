@@ -7,9 +7,9 @@
         <script src="https://cdn.tailwindcss.com"></script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4" x-data="{ openItems: {} }">
+    <body class="bg-gray-100 min-h-screen flex items-center justify-center p-3 sm:p-4" x-data="{ openItems: {} }">
         <div
-            class="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl text-center"
+            class="bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-lg w-full max-w-2xl text-center"
         >
             @if ($errors->any())
             <div
@@ -26,13 +26,13 @@
                 {{ session("success") }}
             </div>
             @endif
-            <h1 class="text-3xl font-bold mb-2">Assessment Result</h1>
-            <p class="text-gray-600 mb-4">
+            <h1 class="text-2xl sm:text-3xl font-bold mb-2">Assessment Result</h1>
+            <p class="text-sm sm:text-base text-gray-600 mb-4 break-words">
                 Prepared for: <strong>{{ session("candidate_name") }}</strong>
             </p>
 
             <div
-                class="text-6xl font-extrabold mb-6 {{
+                class="text-5xl sm:text-6xl font-extrabold mb-4 sm:mb-6 {{
                     $passed ? 'text-green-600' : 'text-red-600'
                 }}"
             >
@@ -41,24 +41,24 @@
 
             <!-- Score Analytics -->
             @if(!empty($analytics))
-            <div class="mb-8 bg-gray-50 p-6 rounded-lg border border-gray-200">
-                <h2 class="text-xl font-bold mb-4 text-gray-800">Score Analytics</h2>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="text-center p-4 bg-white rounded-lg shadow-sm">
-                        <div class="text-3xl font-bold text-blue-600">{{ $analytics['total_questions'] ?? 0 }}</div>
-                        <div class="text-sm text-gray-600 mt-1">Total Questions</div>
+            <div class="mb-6 sm:mb-8 bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 text-left">
+                <h2 class="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-800">Score Analytics</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
+                    <div class="text-center p-3 sm:p-4 bg-white rounded-lg shadow-sm">
+                        <div class="text-2xl sm:text-3xl font-bold text-blue-600">{{ $analytics['total_questions'] ?? 0 }}</div>
+                        <div class="text-xs sm:text-sm text-gray-600 mt-1">Total Questions</div>
                     </div>
-                    <div class="text-center p-4 bg-white rounded-lg shadow-sm">
-                        <div class="text-3xl font-bold text-green-600">{{ $analytics['correct'] ?? 0 }}</div>
-                        <div class="text-sm text-gray-600 mt-1">Correct</div>
+                    <div class="text-center p-3 sm:p-4 bg-white rounded-lg shadow-sm">
+                        <div class="text-2xl sm:text-3xl font-bold text-green-600">{{ $analytics['correct'] ?? 0 }}</div>
+                        <div class="text-xs sm:text-sm text-gray-600 mt-1">Correct</div>
                     </div>
-                    <div class="text-center p-4 bg-white rounded-lg shadow-sm">
-                        <div class="text-3xl font-bold text-red-600">{{ $analytics['incorrect'] ?? 0 }}</div>
-                        <div class="text-sm text-gray-600 mt-1">Incorrect</div>
+                    <div class="text-center p-3 sm:p-4 bg-white rounded-lg shadow-sm">
+                        <div class="text-2xl sm:text-3xl font-bold text-red-600">{{ $analytics['incorrect'] ?? 0 }}</div>
+                        <div class="text-xs sm:text-sm text-gray-600 mt-1">Incorrect</div>
                     </div>
-                    <div class="text-center p-4 bg-white rounded-lg shadow-sm">
-                        <div class="text-3xl font-bold text-yellow-600">{{ $analytics['skipped'] ?? 0 }}</div>
-                        <div class="text-sm text-gray-600 mt-1">Skipped</div>
+                    <div class="text-center p-3 sm:p-4 bg-white rounded-lg shadow-sm">
+                        <div class="text-2xl sm:text-3xl font-bold text-yellow-600">{{ $analytics['skipped'] ?? 0 }}</div>
+                        <div class="text-xs sm:text-sm text-gray-600 mt-1">Skipped</div>
                     </div>
                 </div>
                 <div class="mt-4 pt-4 border-t border-gray-200">
@@ -72,20 +72,20 @@
 
             <!-- Review Wrong Answers -->
             @if(!empty($wrongAnswers) && count($wrongAnswers) > 0)
-            <div class="mb-8 bg-gray-50 p-6 rounded-lg border border-gray-200 text-left">
-                <h2 class="text-xl font-bold mb-4 text-gray-800">Review Wrong Answers</h2>
-                <div class="space-y-3">
+            <div class="mb-6 sm:mb-8 bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 text-left">
+                <h2 class="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-gray-800">Review Wrong Answers</h2>
+                <div class="space-y-2 sm:space-y-3">
                     @foreach($wrongAnswers as $index => $wrongAnswer)
                     <div class="bg-white rounded-lg border-l-4 border-red-500 shadow-sm overflow-hidden">
                         <button
                             @click="openItems[{{ $index }}] = !openItems[{{ $index }}]"
-                            class="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
+                            class="w-full flex items-center justify-between p-3 sm:p-4 text-left hover:bg-gray-50 transition-colors touch-manipulation"
                         >
-                            <div class="flex-1">
-                                <p class="font-bold text-lg text-gray-800">
+                            <div class="flex-1 pr-2">
+                                <p class="font-bold text-base sm:text-lg text-gray-800 break-words">
                                     Question {{ $index + 1 }}: {{ $wrongAnswer['question_text'] }}
                                 </p>
-                                <span class="text-sm text-blue-600 font-mono">
+                                <span class="text-xs sm:text-sm text-blue-600 font-mono">
                                     [{{ $wrongAnswer['language_name'] }}]
                                 </span>
                             </div>

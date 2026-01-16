@@ -15,56 +15,56 @@
             class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
             style="display: none;"
         >
-            <div class="bg-white p-6 rounded-lg shadow-lg flex items-center gap-3">
-                <svg class="animate-spin h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <div class="bg-white p-4 sm:p-6 rounded-lg shadow-lg flex items-center gap-3 mx-4">
+                <svg class="animate-spin h-5 w-5 sm:h-6 sm:w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <span class="text-lg font-medium text-gray-700">Loading assessment...</span>
+                <span class="text-base sm:text-lg font-medium text-gray-700">Loading assessment...</span>
             </div>
         </div>
 
-        <div class="max-w-3xl mx-auto bg-white p-6 rounded shadow" :class="{ 'opacity-50 pointer-events-none': isPageLoading }">
+        <div class="max-w-3xl mx-auto bg-white p-4 sm:p-6 rounded shadow" :class="{ 'opacity-50 pointer-events-none': isPageLoading }">
             <!-- Header -->
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b pb-4 gap-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-6 border-b pb-3 sm:pb-4 gap-3 sm:gap-4">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-800">
+                    <h1 class="text-xl sm:text-2xl font-bold text-gray-800">
                         Technical Assessment
                     </h1>
-                    <p class="text-sm text-gray-600 mt-1">
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1">
                         Question <span x-text="currentQuestionIndex + 1"></span> of <span x-text="totalQuestions"></span>
                     </p>
                 </div>
-                <div class="text-right">
-                    <p class="text-sm font-medium text-gray-600">
+                <div class="text-left md:text-right">
+                    <p class="text-xs sm:text-sm font-medium text-gray-600">
                         Candidate: {{ session("candidate_name") }}
                     </p>
-                    <p class="text-xs text-gray-400">
+                    <p class="text-xs text-gray-400 break-all">
                         {{ session("candidate_email") }}
                     </p>
                 </div>
             </div>
 
             <!-- Progress Bar -->
-            <div class="mb-6">
+            <div class="mb-4 sm:mb-6">
                 <div class="flex justify-between items-center mb-2">
-                    <span class="text-sm font-medium text-gray-700">Progress</span>
-                    <span class="text-sm font-medium text-gray-700" x-text="Math.round((currentQuestionIndex + 1) / totalQuestions * 100) + '%'"></span>
+                    <span class="text-xs sm:text-sm font-medium text-gray-700">Progress</span>
+                    <span class="text-xs sm:text-sm font-medium text-gray-700" x-text="Math.round((currentQuestionIndex + 1) / totalQuestions * 100) + '%'"></span>
                 </div>
-                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div class="w-full bg-gray-200 rounded-full h-2 sm:h-2.5">
                     <div 
-                        class="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+                        class="bg-blue-600 h-2 sm:h-2.5 rounded-full transition-all duration-300"
                         :style="'width: ' + ((currentQuestionIndex + 1) / totalQuestions * 100) + '%'"
                     ></div>
                 </div>
             </div>
 
             <!-- Timer -->
-            <div class="mb-6 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div class="mb-4 sm:mb-6 p-2 sm:p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <div class="flex justify-between items-center">
-                    <span class="text-sm font-medium text-gray-700">Time Remaining:</span>
+                    <span class="text-xs sm:text-sm font-medium text-gray-700">Time Remaining:</span>
                     <span 
-                        class="text-lg font-bold"
+                        class="text-base sm:text-lg font-bold"
                         :class="{
                             'text-red-600': timeRemaining <= 60,
                             'text-yellow-600': timeRemaining <= 120 && timeRemaining > 60,
@@ -92,21 +92,21 @@
                 <!-- Current Question Display -->
                 <template x-for="(question, index) in questions" :key="question.id">
                     <div 
-                        class="mb-8 p-4 border-l-4 border-blue-500 bg-gray-50"
+                        class="mb-6 sm:mb-8 p-3 sm:p-4 border-l-4 border-blue-500 bg-gray-50"
                         x-show="currentQuestionIndex === index"
                     >
                         <div class="flex items-start justify-between mb-2">
-                            <p class="font-bold text-lg flex-1">
+                            <p class="font-bold text-base sm:text-lg flex-1 wrap-break-word">
                                 <span x-text="'Q' + (index + 1) + ':'"></span>
                                 <span x-text="question.question_text"></span>
                             </p>
                         </div>
-                        <span class="text-sm text-blue-600 font-mono" x-text="'[' + question.language_name + ']'"></span>
+                        <span class="text-xs sm:text-sm text-blue-600 font-mono" x-text="'[' + question.language_name + ']'"></span>
 
-                        <div class="mt-4 space-y-2">
+                        <div class="mt-3 sm:mt-4 space-y-2">
                             <template x-for="(option, optIndex) in question.options" :key="optIndex">
                                 <label
-                                    class="flex items-center space-x-3 p-2 border rounded hover:bg-gray-100 cursor-pointer transition-colors"
+                                    class="flex items-center space-x-2 sm:space-x-3 p-3 sm:p-2 border rounded hover:bg-gray-100 cursor-pointer transition-colors touch-manipulation"
                                     :class="{
                                         'bg-blue-100 border-blue-400': question.selectedAnswer === option
                                     }"
@@ -117,9 +117,9 @@
                                         :value="option"
                                         :checked="question.selectedAnswer === option"
                                         @change="selectAnswer(question, option)"
-                                        class="h-4 w-4"
+                                        class="h-5 w-5 sm:h-4 sm:w-4 shrink-0"
                                     />
-                                    <span x-text="option"></span>
+                                    <span class="text-sm sm:text-base wrap-break-word" x-text="option"></span>
                                 </label>
                             </template>
                         </div>
@@ -127,12 +127,12 @@
                 </template>
 
                 <!-- Navigation Buttons -->
-                <div class="flex justify-between items-center mt-8 pt-6 border-t">
+                <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-0 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t">
                     <button
                         type="button"
                         @click="previousQuestion()"
                         :disabled="currentQuestionIndex === 0 || isLoading"
-                        class="px-6 py-2 rounded font-bold transition-colors flex items-center gap-2"
+                        class="px-4 sm:px-6 py-2.5 sm:py-2 rounded font-bold transition-colors flex items-center justify-center gap-2 touch-manipulation"
                         :class="{
                             'bg-gray-300 text-gray-500 cursor-not-allowed': currentQuestionIndex === 0 || isLoading,
                             'bg-gray-600 text-white hover:bg-gray-700': currentQuestionIndex > 0 && !isLoading
@@ -142,38 +142,36 @@
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        <span x-show="!isLoading">← Previous</span>
-                        <span x-show="isLoading">Loading...</span>
+                        <span x-show="!isLoading" class="text-sm sm:text-base">← Previous</span>
+                        <span x-show="isLoading" class="text-sm sm:text-base">Loading...</span>
                     </button>
 
-                    <div class="flex gap-2">
-                        <button
-                            type="button"
-                            @click="submitTest()"
-                            :disabled="isSubmitting"
-                            class="bg-red-600 text-white px-6 py-2 rounded font-bold hover:bg-red-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            <svg x-show="isSubmitting" class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            <span x-show="!isSubmitting">Submit Test</span>
-                            <span x-show="isSubmitting">Submitting...</span>
-                        </button>
-                    </div>
+                    <button
+                        type="button"
+                        @click="submitTest()"
+                        :disabled="isSubmitting"
+                        class="bg-red-600 text-white px-4 sm:px-6 py-2.5 sm:py-2 rounded font-bold hover:bg-red-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation order-first sm:order-0"
+                    >
+                        <svg x-show="isSubmitting" class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span x-show="!isSubmitting" class="text-sm sm:text-base">Submit Test</span>
+                        <span x-show="isSubmitting" class="text-sm sm:text-base">Submitting...</span>
+                    </button>
 
                     <button
                         type="button"
                         @click="nextQuestion()"
                         :disabled="currentQuestionIndex === questions.length - 1 || isLoading"
-                        class="px-6 py-2 rounded font-bold transition-colors flex items-center gap-2"
+                        class="px-4 sm:px-6 py-2.5 sm:py-2 rounded font-bold transition-colors flex items-center justify-center gap-2 touch-manipulation"
                         :class="{
                             'bg-gray-300 text-gray-500 cursor-not-allowed': currentQuestionIndex === questions.length - 1 || isLoading,
                             'bg-blue-600 text-white hover:bg-blue-700': currentQuestionIndex < questions.length - 1 && !isLoading
                         }"
                     >
-                        <span x-show="!isLoading">Next →</span>
-                        <span x-show="isLoading">Loading...</span>
+                        <span x-show="!isLoading" class="text-sm sm:text-base">Next →</span>
+                        <span x-show="isLoading" class="text-sm sm:text-base">Loading...</span>
                         <svg x-show="isLoading" class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
