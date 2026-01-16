@@ -48,13 +48,16 @@
             <!-- Progress Bar -->
             <div class="mb-4 sm:mb-6">
                 <div class="flex justify-between items-center mb-2">
-                    <span class="text-xs sm:text-sm font-medium text-gray-700">Progress</span>
-                    <span class="text-xs sm:text-sm font-medium text-gray-700" x-text="Math.round((currentQuestionIndex + 1) / totalQuestions * 100) + '%'"></span>
+                    <span class="text-xs sm:text-sm font-medium text-gray-700">Completion Progress</span>
+                    <span class="text-xs sm:text-sm font-medium text-gray-700">
+                        <span x-text="answeredCount"></span> of <span x-text="totalQuestions"></span> answered
+                        (<span x-text="Math.round((answeredCount / totalQuestions) * 100)"></span>%)
+                    </span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2 sm:h-2.5">
                     <div 
-                        class="bg-blue-600 h-2 sm:h-2.5 rounded-full transition-all duration-300"
-                        :style="'width: ' + ((currentQuestionIndex + 1) / totalQuestions * 100) + '%'"
+                        class="bg-green-600 h-2 sm:h-2.5 rounded-full transition-all duration-300"
+                        :style="'width: ' + ((answeredCount / totalQuestions) * 100) + '%'"
                     ></div>
                 </div>
             </div>
@@ -267,6 +270,10 @@
 
                     get totalQuestions() {
                         return this.questions.length;
+                    },
+
+                    get answeredCount() {
+                        return this.questions.filter(q => q.selectedAnswer).length;
                     },
 
                     selectAnswer(question, answer) {
