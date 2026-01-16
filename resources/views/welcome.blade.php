@@ -12,10 +12,20 @@
                 Select Programming Languages
             </h1>
 
-            <form action="#" method="POST">
+            <form action="{{ route('test.start') }}" method="POST">
                 @csrf
                 <div class="space-y-4 mb-6">
-                    @foreach($languages as $language)
+                    @if ($errors->any())
+                    <div
+                        class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"
+                    >
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif @foreach($languages as $language)
                     <div class="flex items-center">
                         <input
                             type="checkbox"
