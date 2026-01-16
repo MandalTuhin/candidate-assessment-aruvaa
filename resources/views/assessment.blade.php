@@ -63,11 +63,11 @@
             </div>
 
             <!-- Question MiniMap -->
-            <div class="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 border border-gray-200 rounded-lg" x-data="{ miniMapOpen: false }">
+            <div class="mb-4 sm:mb-6 bg-gray-50 border border-gray-200 rounded-lg" x-data="{ miniMapOpen: false }">
                 <button 
                     type="button"
                     @click.stop="miniMapOpen = !miniMapOpen"
-                    class="flex justify-between items-center w-full mb-3 sm:mb-3 sm:cursor-default sm:pointer-events-none"
+                    class="flex justify-between items-center w-full p-3 sm:p-4 sm:pb-3 sm:cursor-default sm:pointer-events-none"
                 >
                     <span class="text-xs sm:text-sm font-medium text-gray-700">Question Navigator</span>
                     <div class="flex items-center gap-2">
@@ -86,8 +86,8 @@
                 </button>
                 
                 <!-- Mobile: Collapsible, Desktop: Always visible -->
-                <div class="hidden sm:block">
-                    <div class="grid grid-cols-5 sm:grid-cols-10 gap-2 px-1 sm:px-0">
+                <div class="hidden sm:block sm:px-4 sm:pb-4">
+                    <div class="grid grid-cols-5 sm:grid-cols-10 gap-2">
                         <template x-for="(question, index) in questions" :key="question.id">
                             <button
                                 type="button"
@@ -103,7 +103,7 @@
                             ></button>
                         </template>
                     </div>
-                    <div class="flex flex-wrap gap-3 sm:gap-4 mt-3 text-xs px-1 sm:px-0">
+                    <div class="flex flex-wrap gap-3 sm:gap-4 mt-3 text-xs">
                         <div class="flex items-center gap-1.5">
                             <div class="w-4 h-4 bg-blue-600 rounded"></div>
                             <span class="text-gray-600">Current</span>
@@ -128,10 +128,10 @@
                     x-transition:leave="transition ease-in duration-200"
                     x-transition:leave-start="opacity-100 transform scale-y-100"
                     x-transition:leave-end="opacity-0 transform scale-y-0"
-                    class="sm:hidden origin-top"
+                    class="sm:hidden origin-top px-3 pb-3"
                     style="display: none;"
                 >
-                    <div class="grid grid-cols-5 gap-2 px-1">
+                    <div class="grid grid-cols-5 gap-2">
                         <template x-for="(question, index) in questions" :key="question.id">
                             <button
                                 type="button"
@@ -147,7 +147,7 @@
                             ></button>
                         </template>
                     </div>
-                    <div class="flex flex-wrap gap-3 mt-3 text-xs px-1">
+                    <div class="flex flex-wrap gap-3 mt-3 text-xs">
                         <div class="flex items-center gap-1.5">
                             <div class="w-4 h-4 bg-blue-600 rounded"></div>
                             <span class="text-gray-600">Current</span>
