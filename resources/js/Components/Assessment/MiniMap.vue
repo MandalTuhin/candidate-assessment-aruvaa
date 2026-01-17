@@ -39,7 +39,7 @@
                         :key="question.id"
                         type="button"
                         @click="$emit('navigate', index)"
-                        class="aspect-square rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:text-sm"
+                        class="aspect-square rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:text-sm cursor-pointer"
                         :class="{
                             'bg-blue-600 text-white shadow-md focus-visible:outline-blue-600':
                                 currentIndex === index,
@@ -96,7 +96,7 @@
                                 :key="question.id"
                                 type="button"
                                 @click="$emit('navigate', index)"
-                                class="aspect-square rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                                class="aspect-square rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 cursor-pointer"
                                 :class="{
                                     'bg-blue-600 text-white shadow-md focus-visible:outline-blue-600':
                                         currentIndex === index,

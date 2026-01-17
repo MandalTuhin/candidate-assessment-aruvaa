@@ -12,7 +12,7 @@
             :class="{
                 'bg-gray-100 text-gray-400 cursor-not-allowed':
                     !canGoPrevious || isLoading,
-                'bg-white text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-gray-600':
+                'bg-white text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-gray-600 cursor-pointer':
                     canGoPrevious && !isLoading,
             }"
             :aria-label="isLoading ? 'Loading previous question' : 'Go to previous question'"
@@ -62,7 +62,7 @@
             type="button"
             @click="$emit('submit')"
             :disabled="isSubmitting"
-            class="inline-flex items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 disabled:cursor-not-allowed disabled:opacity-50 sm:order-2"
+            class="inline-flex items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer sm:order-2"
             :aria-label="isSubmitting ? 'Submitting assessment...' : 'Submit assessment for grading'"
         >
             <svg
@@ -98,7 +98,7 @@
             :class="{
                 'bg-gray-100 text-gray-400 cursor-not-allowed':
                     !canGoNext || isLoading,
-                'bg-blue-600 text-white hover:bg-blue-500 focus-visible:outline-blue-600':
+                'bg-blue-600 text-white hover:bg-blue-500 focus-visible:outline-blue-600 cursor-pointer':
                     canGoNext && !isLoading,
             }"
             :aria-label="isLoading ? 'Loading next question' : 'Go to next question'"
