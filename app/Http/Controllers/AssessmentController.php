@@ -396,15 +396,54 @@ class AssessmentController extends Controller
     public function saveProgress(Request $request): \Illuminate\Http\JsonResponse
     {
         try {
-            $answers = $request->input('answers', []);
+            // Validate that we have a valid test session
+            $selectedLanguages = session('selected_languages');
+            $testStartTime = session('test_start_time');
+            
+            if (empty($selectedLanguages) || !$testStartTime) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid test session. Please restart the assessment.',
+                ], 400);
+            }
+
+            // Handle both JSON and FormData (from sendBeacon)
+            $answers = [];
+            if ($request->hasHeader('Content-Type') && str_contains($request->header('Content-Type'), 'application/json')) {
+                $answers = $request->input('answers', []);
+            } else {
+                // Handle FormData from sendBeacon
+                $answersJson = $request->input('answers');
+                if ($answersJson) {
+                    $answers = json_decode($answersJson, true) ?: [];
+                }
+            }
+
+            // Validate answers format
+            if (!is_array($answers)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid answers format.',
+                ], 400);
+            }
 
             // Save progress to session
             session(['test_progress' => $answers]);
 
-            return response()->json(['success' => true, 'message' => 'Progress saved']);
+            return response()->json([
+                'success' => true, 
+                'message' => 'Progress saved',
+                'saved_count' => count($answers)
+            ]);
         } catch (\Exception $e) {
             // Log the error for debugging
-            \Log::error('Progress save error: '.$e->getMessage());
+            \Log::error('Progress save error: '.$e->getMessage(), [
+                'request_data' => $request->all(),
+                'session_data' => [
+                    'has_languages' => !empty(session('selected_languages')),
+                    'has_start_time' => !empty(session('test_start_time')),
+                ]
+            ]);
 
             return response()->json([
                 'success' => false,
