@@ -108,6 +108,79 @@ Route::post('/test-upload', function (\Illuminate\Http\Request $request) {
     }
 });
 
+// Test database and assessments
+Route::get('/test-assessments', function () {
+    try {
+        $assessments = \App\Models\Assessment::all();
+        $latestAssessment = \App\Models\Assessment::latest()->first();
+        
+        return response()->json([
+            'assessments_count' => $assessments->count(),
+            'latest_assessment' => $latestAssessment,
+            'table_exists' => \Schema::hasTable('assessments'),
+            'columns' => \Schema::hasTable('assessments') ? \Schema::getColumnListing('assessments') : [],
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ], 500);
+    }
+});
+
+// Test resume upload process
+Route::post('/test-resume-upload', function (\Illuminate\Http\Request $request) {
+    try {
+        \Log::info('Test resume upload started', $request->all());
+        
+        // Create a test assessment first
+        $assessment = \App\Models\Assessment::create([
+            'candidate_name' => 'Test User',
+            'candidate_email' => 'test@example.com',
+            'score' => 85,
+        ]);
+        
+        \Log::info('Test assessment created', ['id' => $assessment->id]);
+        
+        if (!$request->hasFile('resume')) {
+            return response()->json(['error' => 'No resume file uploaded'], 400);
+        }
+        
+        $file = $request->file('resume');
+        \Log::info('Resume file details', [
+            'name' => $file->getClientOriginalName(),
+            'size' => $file->getSize(),
+            'extension' => $file->getClientOriginalExtension(),
+        ]);
+        
+        // Test the exact same process as the real upload
+        $path = $file->store('resumes', 'public');
+        \Log::info('Resume stored', ['path' => $path]);
+        
+        $assessment->update(['resume_path' => $path]);
+        \Log::info('Assessment updated with resume path');
+        
+        return response()->json([
+            'success' => true,
+            'assessment_id' => $assessment->id,
+            'resume_path' => $path,
+            'file_exists' => \Storage::disk('public')->exists($path),
+        ]);
+        
+    } catch (\Exception $e) {
+        \Log::error('Test resume upload failed', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+        
+        return response()->json([
+            'error' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile(),
+        ], 500);
+    }
+});
+
 Route::get('/', [AssessmentController::class, 'index'])->name('home');
 
 // This handles the form submission from the landing page
