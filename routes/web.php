@@ -181,6 +181,26 @@ Route::post('/test-resume-upload', function (\Illuminate\Http\Request $request) 
     }
 });
 
+// Simple upload test form (bypasses Inertia)
+Route::get('/upload-test-form', function () {
+    return response('<html><head><title>Resume Upload Test</title></head><body style="font-family: Arial; padding: 20px;">
+        <h2>Test Resume Upload</h2>
+        <form action="/test-resume-upload" method="POST" enctype="multipart/form-data">
+            ' . csrf_field() . '
+            <p><label>Select Resume (PDF, DOC, DOCX):</label><br>
+            <input type="file" name="resume" accept=".pdf,.doc,.docx" required></p>
+            <p><button type="submit" style="padding: 10px 20px; background: #007cba; color: white; border: none; cursor: pointer;">Upload Test Resume</button></p>
+        </form>
+        <hr>
+        <p><strong>Storage Status:</strong></p>
+        <ul>
+            <li>Storage writable: ' . (is_writable(storage_path('app/public')) ? '✅ Yes' : '❌ No') . '</li>
+            <li>Resumes dir writable: ' . (is_writable(storage_path('app/public/resumes')) ? '✅ Yes' : '❌ No') . '</li>
+            <li>PHP upload limit: ' . ini_get('upload_max_filesize') . '</li>
+        </ul>
+    </body></html>')->header('Content-Type', 'text/html');
+});
+
 Route::get('/', [AssessmentController::class, 'index'])->name('home');
 
 // This handles the form submission from the landing page
