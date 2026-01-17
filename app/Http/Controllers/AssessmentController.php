@@ -31,6 +31,9 @@ class AssessmentController extends Controller
             'languages' => 'required|array|min:1',
         ]);
 
+        // Clear any existing test session data
+        session()->forget(['test_progress', 'test_start_time', 'test_question_ids']);
+
         // Session: Store the IDs so we remember them on the next page.
         session([
             'candidate_name' => $request->name,
@@ -65,6 +68,24 @@ class AssessmentController extends Controller
         // Get saved progress from session if exists
         $savedProgress = session('test_progress', []);
 
+        // Handle timer state - if no timer start time exists, set it now
+        $testStartTime = session('test_start_time');
+        $testDuration = 300; // 5 minutes in seconds
+        
+        if (!$testStartTime) {
+            $testStartTime = now()->timestamp;
+            session(['test_start_time' => $testStartTime]);
+        }
+
+        // Calculate remaining time based on elapsed time
+        $elapsedTime = now()->timestamp - $testStartTime;
+        $timeRemaining = max(0, $testDuration - $elapsedTime);
+
+        // If time has expired, redirect to submit
+        if ($timeRemaining <= 0) {
+            return redirect()->route('test.submit-expired');
+        }
+
         // Prepare questions data for JavaScript
         $questionsData = $questions->map(function ($q) use ($savedProgress) {
             return [
@@ -77,11 +98,12 @@ class AssessmentController extends Controller
             ];
         })->values();
 
-        // 4. Pass the questions to Inertia
+        // Pass the questions and remaining time to Inertia
         return inertia('Assessment', [
             'questionsData' => $questionsData,
             'candidateName' => session('candidate_name'),
             'candidateEmail' => session('candidate_email'),
+            'timeRemaining' => $timeRemaining,
         ]);
     }
 
@@ -152,7 +174,19 @@ class AssessmentController extends Controller
             'all_questions_review' => $allQuestionsReview,
         ]);
 
+        // Clear test session data including timer
+        session()->forget(['test_progress', 'test_start_time', 'test_question_ids']);
+
         return redirect()->route('test.result');
+    }
+
+    public function submitExpiredTest()
+    {
+        // Get saved progress from session
+        $savedProgress = session('test_progress', []);
+        
+        // Submit the test with whatever answers were saved
+        return $this->submitTest(new Request(['answers' => $savedProgress]));
     }
 
     public function showResult()

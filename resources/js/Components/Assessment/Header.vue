@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-6 border-b pb-3 sm:pb-4 gap-3 sm:gap-4"
+        class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-6 border-b border-gray-300 pb-3 sm:pb-4 gap-3 sm:gap-4"
     >
         <div>
             <h1 class="text-xl sm:text-2xl font-bold text-gray-800">

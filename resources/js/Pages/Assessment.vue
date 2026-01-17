@@ -69,11 +69,12 @@ const props = defineProps({
     questionsData: Array,
     candidateName: String,
     candidateEmail: String,
+    timeRemaining: Number,
 });
 
 const questions = ref(props.questionsData);
 const currentQuestionIndex = ref(0);
-const timeRemaining = ref(300);
+const timeRemaining = ref(props.timeRemaining);
 const timerInterval = ref(null);
 const isLoading = ref(false);
 const isSubmitting = ref(false);

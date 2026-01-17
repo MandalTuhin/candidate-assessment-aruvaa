@@ -1,5 +1,7 @@
 <template>
-    <div class="mb-4 sm:mb-6 bg-gray-50 border border-gray-200 rounded-lg overflow-hidden">
+    <div
+        class="mb-4 sm:mb-6 bg-gray-50 border border-gray-200 rounded-lg overflow-hidden"
+    >
         <button
             type="button"
             @click.stop="miniMapOpen = !miniMapOpen"
