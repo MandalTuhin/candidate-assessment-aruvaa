@@ -26,15 +26,31 @@ class EloquentQuestionRepository implements QuestionRepositoryInterface
      */
     public function getRandomQuestionsByLanguages(array $languageIds, ?int $limit = null): Collection
     {
-        $query = Question::with('language')
-            ->whereIn('language_id', $languageIds)
-            ->inRandomOrder();
-
-        if ($limit) {
-            $query->limit($limit);
+        // If no limit specified, get all questions
+        if (!$limit) {
+            return Question::with('language')
+                ->whereIn('language_id', $languageIds)
+                ->inRandomOrder()
+                ->get();
         }
 
-        return $query->get();
+        // Calculate questions per language for balanced distribution
+        $questionsPerLanguage = intval($limit / count($languageIds));
+        $questions = collect();
+
+        // Get questions for each language separately to ensure balanced distribution
+        foreach ($languageIds as $languageId) {
+            $languageQuestions = Question::with('language')
+                ->where('language_id', $languageId)
+                ->inRandomOrder()
+                ->limit($questionsPerLanguage)
+                ->get();
+            
+            $questions = $questions->merge($languageQuestions);
+        }
+
+        // Shuffle the final collection to randomize the order
+        return $questions->shuffle();
     }
 
     /**

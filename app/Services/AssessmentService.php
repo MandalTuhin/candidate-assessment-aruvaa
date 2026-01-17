@@ -21,7 +21,7 @@ use Illuminate\Support\Collection;
  */
 class AssessmentService
 {
-    private const QUESTIONS_PER_ASSESSMENT = 10;
+    private const QUESTIONS_PER_LANGUAGE = 10;
 
     public function __construct(
         private QuestionRepositoryInterface $questionRepository,
@@ -37,7 +37,10 @@ class AssessmentService
      */
     public function getQuestionsForAssessment(array $languageIds): Collection
     {
-        return $this->questionRepository->getRandomQuestionsByLanguages($languageIds, self::QUESTIONS_PER_ASSESSMENT);
+        // Calculate total limit: 10 questions per selected language
+        $totalLimit = count($languageIds) * self::QUESTIONS_PER_LANGUAGE;
+        
+        return $this->questionRepository->getRandomQuestionsByLanguages($languageIds, $totalLimit);
     }
 
     /**
