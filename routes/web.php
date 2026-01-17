@@ -44,6 +44,27 @@ Route::get('/test-html', function () {
     return '<html><body><h1>Plain HTML Test - Laravel is working!</h1><p>If you see this, the server is fine.</p></body></html>';
 });
 
+// Test storage permissions
+Route::get('/test-storage', function () {
+    $storagePath = storage_path('app/public');
+    $resumesPath = storage_path('app/public/resumes');
+    $publicLink = public_path('storage');
+    
+    return response()->json([
+        'storage_path_exists' => is_dir($storagePath),
+        'storage_path_writable' => is_writable($storagePath),
+        'resumes_path_exists' => is_dir($resumesPath),
+        'resumes_path_writable' => is_writable($resumesPath),
+        'public_link_exists' => is_link($publicLink) || is_dir($publicLink),
+        'storage_path' => $storagePath,
+        'resumes_path' => $resumesPath,
+        'public_link' => $publicLink,
+        'php_upload_max_filesize' => ini_get('upload_max_filesize'),
+        'php_post_max_size' => ini_get('post_max_size'),
+        'php_max_file_uploads' => ini_get('max_file_uploads'),
+    ]);
+});
+
 Route::get('/', [AssessmentController::class, 'index'])->name('home');
 
 // This handles the form submission from the landing page

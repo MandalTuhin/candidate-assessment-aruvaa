@@ -69,9 +69,14 @@ php artisan config:cache || echo "⚠️  Config cache failed"
 php artisan route:cache || echo "⚠️  Route cache failed"
 php artisan view:cache || echo "⚠️  View cache failed"
 
+# Create storage link for file uploads
+echo "Creating storage link..."
+php artisan storage:link || echo "⚠️  Storage link creation failed"
+
 # Ensure storage is writable
 echo "Fixing permissions..."
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache || echo "⚠️  Permission fix failed"
+chmod -R 775 /var/www/html/storage || echo "⚠️  Storage permission fix failed"
 
 # Create nginx run directory
 mkdir -p /var/run/nginx
