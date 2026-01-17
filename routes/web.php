@@ -32,8 +32,16 @@ Route::get('/debug', function () {
         'timestamp' => now(),
         'env' => app()->environment(),
         'php_version' => PHP_VERSION,
-        'laravel_version' => app()->version()
+        'laravel_version' => app()->version(),
+        'app_url' => config('app.url'),
+        'vite_manifest_exists' => file_exists(public_path('build/manifest.json')),
+        'languages_count' => \App\Models\Language::count()
     ]);
+});
+
+// Test plain HTML route (no Inertia)
+Route::get('/test-html', function () {
+    return '<html><body><h1>Plain HTML Test - Laravel is working!</h1><p>If you see this, the server is fine.</p></body></html>';
 });
 
 Route::get('/', [AssessmentController::class, 'index'])->name('home');
