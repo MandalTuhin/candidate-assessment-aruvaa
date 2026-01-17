@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('language_id')->constrained()->cascadeOnDelete();
-            $table->string('question_text');
-            $table->string('options');
+            $table->text('question_text');
+            $table->json('options'); // Store multiple choice options as JSON
             $table->string('correct_answer');
             $table->timestamps();
         });

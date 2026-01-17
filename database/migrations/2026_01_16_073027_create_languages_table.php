@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('languages', function (Blueprint $table) {
             $table->id();
-            $table->string('name') -> unique();
+            $table->string('name')->unique();
+            $table->text('description')->nullable(); // Optional description of the language
             $table->timestamps();
         });
     }
