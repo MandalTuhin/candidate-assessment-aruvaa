@@ -3,7 +3,7 @@
     <button
       @click="reviewOpen = !reviewOpen"
       type="button"
-      class="w-full flex items-center justify-between p-4 sm:p-5 text-left bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 transition-all touch-manipulation border-b border-gray-200"
+      class="w-full flex items-center justify-between p-4 sm:p-5 text-left bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 transition-all touch-manipulation border-b border-gray-200 cursor-pointer"
     >
       <div class="flex items-center gap-3">
         <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

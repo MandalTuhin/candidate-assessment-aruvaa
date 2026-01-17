@@ -34,7 +34,7 @@
       <button
         type="button"
         @click="$emit('clear')"
-        class="inline-flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-medium text-red-700 bg-red-50 border border-red-300 rounded-md hover:bg-red-100 hover:border-red-400 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-400 transition-all touch-manipulation"
+        class="inline-flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-medium text-red-700 bg-red-50 border border-red-300 rounded-md hover:bg-red-100 hover:border-red-400 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-400 transition-all touch-manipulation cursor-pointer"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
