@@ -3,7 +3,6 @@
 use App\Http\Controllers\AssessmentController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
-use Exception;
 
 // Health check endpoint for Railway
 Route::get('/health', function () {
@@ -16,7 +15,7 @@ Route::get('/health', function () {
             'timestamp' => now(),
             'database' => 'connected'
         ]);
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
         return response()->json([
             'status' => 'ok', // Still return ok even if DB fails
             'timestamp' => now(),
