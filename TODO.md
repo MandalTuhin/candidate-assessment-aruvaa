@@ -1,0 +1,16 @@
+[x] Score analytics (when the user clicks on the result page, the page should show a score analytics, like how many questions the user answered correctly, how many questions the user answered incorrectly, how many questions the user skipped, how many questions the user answered in the time limit, how many questions the user answered in the time limit)
+[x] Review wrong answers (when the user clicks on the result page, the page should show a list of wrong answers, and the correct answer)
+[x] Save partial progress (when the user clicks on the next button, the page should show a loading state, if the ui is slow, the user should see a loading state, how to implement it? using a session to store the progress? )
+[x] Include loading states (when the user clicks on the next button, the page should show a loading state, if the ui is slow, the user should see a loading state)
+[x] make ui responsive (mobile responsive)
+[x] add a question miniMap (like clicking on 1 navigates me to 1 number question)
+
+[done] change cursor-pointer for all btns
+[done] make the loading overlay have some overlay
+[] fix responsiveness and buldge of the minimap in small screens
+[] fix colors and contrast.
+[done] fix borders of options
+[done] fix margin-top for spacing in review cards
+
+[] see if the
+[] test functionelity

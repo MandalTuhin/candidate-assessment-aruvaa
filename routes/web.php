@@ -14,6 +14,9 @@ Route::get('/assessment', [AssessmentController::class, 'showTest'])->name('test
 // Routing to submit the test and get the results
 Route::post('/submit-test', [AssessmentController::class, 'submitTest'])->name('test.submit');
 
+// Route for handling expired tests
+Route::get('/submit-expired', [AssessmentController::class, 'submitExpiredTest'])->name('test.submit-expired');
+
 // Route for showing the result
 Route::get('/result', [AssessmentController::class, 'showResult'])->name('test.result');
 

@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('candidate_name');
             $table->string('candidate_email');
-            $table->integer('score')->default(0); // Their final score 
-            $table->foreignId('resume_path')->nullable();
+            $table->integer('score')->default(0); // Their final score (0-100 percentage)
+            $table->string('resume_path')->nullable(); // Path to uploaded resume file
             $table->timestamps();
         });
     }

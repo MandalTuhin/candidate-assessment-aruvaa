@@ -2,204 +2,268 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StartTestRequest;
+use App\Http\Requests\UploadResumeRequest;
 use App\Models\Language;
+use App\Services\AssessmentService;
+use App\Services\FileUploadService;
+use App\Services\SessionService;
+use App\Services\ScoringService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Inertia\Response;
 
+/**
+ * AssessmentController
+ *
+ * Handles HTTP requests for the technical assessment system.
+ * Delegates business logic to appropriate services while managing
+ * HTTP concerns like validation, redirects, and response formatting.
+ *
+ * @author Laravel Assessment System
+ * @version 1.0.0
+ */
 class AssessmentController extends Controller
 {
+    public function __construct(
+        private AssessmentService $assessmentService,
+        private SessionService $sessionService,
+        private ScoringService $scoringService,
+        private FileUploadService $fileUploadService
+    ) {}
+
     /**
      * Display the language selection page.
      */
-    public function index()
+    public function index(): Response
     {
-        $languages = Language::all();
+        try {
+            $languages = Language::all();
 
-        return view('welcome', compact('languages'));
+            return inertia('Welcome', [
+                'languages' => $languages,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Database connection failed in index method: '.$e->getMessage());
+
+            return inertia('Welcome', [
+                'languages' => [],
+                'error' => 'Unable to load programming languages. Please check your internet connection and try again.',
+            ]);
+        }
     }
 
     /**
      * Process the language selection and start the test.
      */
-    public function startTest(Request $request)
+    public function startTest(StartTestRequest $request): RedirectResponse
     {
-        // Validate: Ensure 'languages' is present, is an array, and has at least 1 item.
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email',
-            'languages' => 'required|array|min:1',
-        ]);
+        $validated = $request->validated();
 
-        // Session: Store the IDs so we remember them on the next page.
-        session([
-            'candidate_name' => $request->name,
-            'candidate_email' => $request->email,
-            'selected_languages' => $request->languages,
-        ]);
+        $this->sessionService->initializeTestSession(
+            $validated['name'],
+            $validated['email'],
+            $validated['languages']
+        );
 
-        // Redirect: Go to the quiz display (we will create this route next).
         return redirect()->route('test.show');
     }
 
-    public function showTest()
+    /**
+     * Display the assessment test interface.
+     */
+    public function showTest(): Response|RedirectResponse
     {
-        // Retrieve the IDs we saved in the session
-        $selectedIds = session('selected_languages', []);
+        try {
+            $testSession = $this->sessionService->getCurrentTestSession();
 
-        // If the session is empty (e.g. user goes directly to /assessment), redirect back
-        if (empty($selectedIds)) {
-            return redirect()->route('home');
-        }
-
-        // Fetch questions belonging to those languages
-        // We use with('language') so we know which language each question belongs to
-        $questions = \App\Models\Question::with('language')
-            ->whereIn('language_id', $selectedIds)
-            ->inRandomOrder()
-            ->get();
-
-        // Store question IDs in session for analytics calculation
-        session(['test_question_ids' => $questions->pluck('id')->toArray()]);
-
-        // Get saved progress from session if exists
-        $savedProgress = session('test_progress', []);
-
-        // Prepare questions data for JavaScript
-        $questionsData = $questions->map(function ($q) use ($savedProgress) {
-            return [
-                'id' => $q->id,
-                'question_text' => $q->question_text,
-                'options' => $q->options,
-                'correct_answer' => $q->correct_answer,
-                'language_name' => $q->language->name,
-                'selectedAnswer' => $savedProgress[$q->id] ?? null,
-            ];
-        })->values();
-
-        // 4. Pass the questions to a new view
-        return view('assessment', compact('questions', 'questionsData'));
-    }
-
-    public function submitTest(Request $request)
-    {
-        // Get user answers from the request
-        $userAnswers = $request->input('answers', []); // format: [question_id => selected_option]
-
-        // Get all question IDs from the test (including unanswered ones)
-        $allQuestionIds = session('test_question_ids', []);
-        $questions = \App\Models\Question::whereIn('id', $allQuestionIds)->get();
-
-        $totalQuestions = $questions->count();
-        $correctCount = 0;
-        $incorrectCount = 0;
-        $skippedCount = 0;
-        $allQuestionsReview = [];
-
-        // Compare answers and calculate analytics
-        foreach ($questions as $index => $question) {
-            $submittedAnswer = $userAnswers[$question->id] ?? null;
-            $status = 'skipped';
-
-            if ($submittedAnswer === null || $submittedAnswer === '') {
-                $skippedCount++;
-                $status = 'skipped';
-            } elseif ($submittedAnswer === $question->correct_answer) {
-                $correctCount++;
-                $status = 'correct';
-            } else {
-                $incorrectCount++;
-                $status = 'incorrect';
+            if (!$testSession) {
+                return redirect()->route('home')
+                    ->with('error', 'Please select programming languages to start the assessment.');
             }
 
-            // Store all question details for review
-            $allQuestionsReview[] = [
-                'question_number' => $index + 1,
-                'question_text' => $question->question_text,
-                'language_name' => $question->language->name,
-                'user_answer' => $submittedAnswer,
-                'correct_answer' => $question->correct_answer,
-                'options' => $question->options,
-                'status' => $status,
-            ];
+            if ($this->assessmentService->isTimeExpired($testSession)) {
+                return redirect()->route('test.submit-expired');
+            }
+
+            $questions = $this->assessmentService->getQuestionsForAssessment(
+                $testSession->getSelectedLanguages()
+            );
+
+            if ($questions->isEmpty()) {
+                return redirect()->route('home')
+                    ->with('error', 'No questions available for the selected programming languages. Please try again later.');
+            }
+
+            $this->sessionService->storeQuestionIds($questions->pluck('id')->toArray());
+            $savedProgress = $this->sessionService->getSavedProgress();
+            $questionsData = $this->assessmentService->prepareQuestionsData($questions, $savedProgress);
+
+            return inertia('Assessment', [
+                'questionsData' => $questionsData,
+                'candidateName' => $testSession->getCandidateName(),
+                'candidateEmail' => $testSession->getCandidateEmail(),
+                'timeRemaining' => $testSession->getRemainingTime(),
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Database error in showTest method: '.$e->getMessage());
+
+            return redirect()->route('home')
+                ->with('error', 'Unable to load assessment questions. Please check your connection and try again.');
         }
-
-        // Calculate score (Percentage) - based on total questions
-        $score = $totalQuestions > 0 ? round(($correctCount / $totalQuestions) * 100) : 0;
-
-        // Save the attempt to the database (Assessment Model)
-        $assessment = \App\Models\Assessment::create([
-            'candidate_name' => session('candidate_name'),
-            'candidate_email' => session('candidate_email'),
-            'score' => $score,
-        ]);
-
-        // Store analytics in session for result page
-        session([
-            'last_score' => $score,
-            'assessment_id' => $assessment->id,
-            'analytics' => [
-                'total_questions' => $totalQuestions,
-                'correct' => $correctCount,
-                'incorrect' => $incorrectCount,
-                'skipped' => $skippedCount,
-                'answered' => $correctCount + $incorrectCount,
-            ],
-            'all_questions_review' => $allQuestionsReview,
-        ]);
-
-        return redirect()->route('test.result');
     }
 
-    public function showResult()
+    /**
+     * Process test submission and calculate results.
+     */
+    public function submitTest(Request $request): RedirectResponse
     {
-        $score = session('last_score', 0);
-        $assessmentId = session('assessment_id');
-        $analytics = session('analytics', []);
-        $allQuestionsReview = session('all_questions_review', []);
+        try {
+            $testSession = $this->sessionService->getCurrentTestSession();
+            
+            if (!$testSession) {
+                return redirect()->route('home')
+                    ->with('error', 'Assessment session expired. Please start a new assessment.');
+            }
 
-        // if there is no score in the session. we redirect to home
-        if ($score === null) {
+            $userAnswers = $request->input('answers', []);
+            $questionIds = $this->sessionService->getQuestionIds();
+
+            if (empty($questionIds)) {
+                return redirect()->route('home')
+                    ->with('error', 'Assessment session expired. Please start a new assessment.');
+            }
+
+            $result = $this->assessmentService->processTestSubmission(
+                $userAnswers,
+                $questionIds,
+                $testSession
+            );
+
+            $this->sessionService->storeAssessmentResults($result->toArray());
+            $this->sessionService->clearTestSession();
+
+            return redirect()->route('test.result');
+        } catch (\Exception $e) {
+            Log::error('Database error in submitTest method: '.$e->getMessage());
+
+            return redirect()->route('home')
+                ->with('error', 'Unable to save your assessment results. Please try again or contact support.');
+        }
+    }
+
+    /**
+     * Handle automatic test submission when time expires.
+     */
+    public function submitExpiredTest(): RedirectResponse
+    {
+        $savedProgress = $this->sessionService->getSavedProgress();
+        return $this->submitTest(new Request(['answers' => $savedProgress]));
+    }
+
+    /**
+     * Display the assessment results page.
+     */
+    public function showResult(): Response|RedirectResponse
+    {
+        $results = $this->sessionService->getAssessmentResults();
+
+        if ($results['score'] === null) {
             return redirect()->route('home');
         }
 
-        $threshold = 50;
+        $passed = $this->scoringService->hasPassed($results['score']);
 
-        $passed = $score >= $threshold;
-
-        return view('result', compact('score', 'passed', 'assessmentId', 'analytics', 'allQuestionsReview'));
+        return inertia('Result', [
+            'score' => $results['score'],
+            'passed' => $passed,
+            'assessmentId' => $results['assessment_id'],
+            'analytics' => $results['analytics'],
+            'allQuestionsReview' => $results['all_questions_review'],
+            'candidateName' => $results['candidate_name'],
+        ]);
     }
 
-    public function uploadResume(Request $request)
+    /**
+     * Handle resume file upload for successful candidates.
+     */
+    public function uploadResume(UploadResumeRequest $request): RedirectResponse
     {
-        $request->validate([
-            'resume' => 'required|file|mimes:pdf,doc,docx|max:2048',
-            'assessment_id' => 'required|exists:assessments,id',
-        ]);
+        try {
+            $validated = $request->validated();
 
-        if ($request->hasFile('resume')) {
-            // Store the file
-            $path = $request->file('resume')->store('resumes', 'public');
+            $this->fileUploadService->uploadResume(
+                $validated['resume'],
+                $validated['assessment_id']
+            );
 
-            // Retrieve the specific model instance
-            $assessment = \App\Models\Assessment::findOrFail($request->assessment_id);
+            return back()->with('success', 'Resume uploaded successfully! Your application is now complete.');
+        } catch (\InvalidArgumentException $e) {
+            return back()->with('error', $e->getMessage());
+        } catch (\Exception $e) {
+            Log::error('Resume upload error: '.$e->getMessage());
+            return back()->with('error', 'Resume upload failed due to a server error. Please try again or contact support.');
+        }
+    }
 
-            // Update the record
-            $assessment->update([
-                'resume_path' => $path,
+    /**
+     * Save candidate's progress during the assessment.
+     */
+    public function saveProgress(Request $request): JsonResponse
+    {
+        try {
+            if (!$this->sessionService->hasValidTestSession()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid test session. Please restart the assessment.',
+                ], 400);
+            }
+
+            $answers = $this->extractAnswersFromRequest($request);
+
+            if (!is_array($answers)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid answers format.',
+                ], 400);
+            }
+
+            $this->sessionService->saveProgress($answers);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Progress saved',
+                'saved_count' => count($answers)
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Progress save error: '.$e->getMessage(), [
+                'request_data' => $request->all(),
             ]);
 
-            return back()->with('success', 'Resume uploaded successfully!');
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to save progress. Your answers may not be preserved if you navigate away.',
+            ], 500);
         }
-
-        return back()->with('error', 'File upload failed.');
     }
 
-    public function saveProgress(Request $request)
+    /**
+     * Extract answers from request handling both JSON and FormData.
+     */
+    private function extractAnswersFromRequest(Request $request): array
     {
-        $answers = $request->input('answers', []);
+        if ($request->hasHeader('Content-Type') && str_contains($request->header('Content-Type'), 'application/json')) {
+            return $request->input('answers', []);
+        }
 
-        // Save progress to session
-        session(['test_progress' => $answers]);
+        // Handle FormData from sendBeacon
+        $answersJson = $request->input('answers');
+        if ($answersJson) {
+            return json_decode($answersJson, true) ?: [];
+        }
 
-        return response()->json(['success' => true, 'message' => 'Progress saved']);
+        return [];
     }
 }
