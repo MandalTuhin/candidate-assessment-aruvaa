@@ -1,12 +1,12 @@
 <template>
-    <main class="min-h-screen bg-gray-50 px-4 py-6 sm:px-6 lg:px-8">
+    <main class="min-h-screen bg-gray-50 px-2 py-4 sm:px-4 sm:py-6 lg:px-8">
         <LoadingOverlay
             :is-loading="isPageLoading"
             message="Loading assessment..."
         />
 
         <section
-            class="relative mx-auto max-w-4xl rounded-xl bg-white shadow-lg border border-gray-200 p-4 sm:p-6 lg:p-8"
+            class="relative mx-auto w-full max-w-4xl rounded-xl bg-white shadow-lg border border-gray-200 p-3 sm:p-4 lg:p-6 xl:p-8"
             :class="{ 'opacity-50 pointer-events-none': isPageLoading }"
             role="main"
             aria-label="Technical assessment interface"
