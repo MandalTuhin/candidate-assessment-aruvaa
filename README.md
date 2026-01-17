@@ -48,10 +48,10 @@
 
 ### **Option 1: One-Command Setup**
 ```bash
-git clone https://github.com/MandalTuhin/candidate-assesment-aruvaa.git && cd candidate-assessment
+git clone https://github.com/MandalTuhin/candidate-assesment-aruvaa.git && cd candidate-assesment-aruvaa
 composer install && npm install
 cp .env.example .env && php artisan key:generate
-php artisan migrate:fresh --seed && npm run build
+touch database/database.sqlite && php artisan migrate:fresh --seed && npm run build
 php artisan serve
 ```
 
@@ -59,7 +59,7 @@ php artisan serve
 ```bash
 # 1. Clone and install dependencies
 git clone https://github.com/MandalTuhin/candidate-assesment-aruvaa.git
-cd candidate-assessment
+cd candidate-assesment-aruvaa
 composer install
 npm install
 
@@ -67,17 +67,57 @@ npm install
 cp .env.example .env
 php artisan key:generate
 
-# 3. Database setup with sample data
+# 3. Create SQLite database file
+touch database/database.sqlite
+
+# 4. Database setup with sample data
 php artisan migrate:fresh --seed
 
-# 4. Build frontend assets
+# 5. Build frontend assets
 npm run build
 
-# 5. Start the application
+# 6. Start the application
 php artisan serve
 ```
 
 **🌐 Access the application at:** `http://localhost:8000`
+
+---
+
+## 🔧 Troubleshooting
+
+### **Common Setup Issues**
+
+#### **SQLite Database Error**
+If you encounter "Database file does not exist" error:
+```bash
+# Create the SQLite database file
+touch database/database.sqlite
+
+# Then run migrations
+php artisan migrate:fresh --seed
+```
+
+#### **Permission Issues (Linux/Mac)**
+```bash
+# Fix storage permissions
+chmod -R 775 storage bootstrap/cache
+```
+
+#### **Node.js Build Issues**
+```bash
+# Clear npm cache and reinstall
+npm cache clean --force
+rm -rf node_modules package-lock.json
+npm install
+npm run build
+```
+
+#### **Laravel Key Missing**
+```bash
+# Generate application key
+php artisan key:generate
+```
 
 ---
 
