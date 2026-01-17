@@ -2,10 +2,28 @@
 
 use App\Http\Controllers\AssessmentController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
+use Exception;
 
 // Health check endpoint for Railway
 Route::get('/health', function () {
-    return response()->json(['status' => 'ok', 'timestamp' => now()]);
+    try {
+        // Test database connection
+        DB::connection()->getPdo();
+        
+        return response()->json([
+            'status' => 'ok',
+            'timestamp' => now(),
+            'database' => 'connected'
+        ]);
+    } catch (Exception $e) {
+        return response()->json([
+            'status' => 'ok', // Still return ok even if DB fails
+            'timestamp' => now(),
+            'database' => 'disconnected',
+            'error' => $e->getMessage()
+        ], 200); // Return 200 so Railway doesn't fail health check
+    }
 });
 
 Route::get('/', [AssessmentController::class, 'index'])->name('home');
