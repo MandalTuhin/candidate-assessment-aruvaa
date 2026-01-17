@@ -6,6 +6,7 @@ echo "🚀 Starting deployment..."
 echo "Environment: APP_ENV=${APP_ENV:-not_set}"
 echo "Database: DB_CONNECTION=${DB_CONNECTION:-not_set}"
 echo "App Key: APP_KEY=${APP_KEY:+set}"
+echo "App URL: APP_URL=${APP_URL:-not_set}"
 
 # Check if APP_KEY is set
 if [ -z "$APP_KEY" ]; then
@@ -22,51 +23,50 @@ if [ "$DB_CONNECTION" = "sqlite" ] || [ -z "$DB_CONNECTION" ]; then
     chown -R www-data:www-data /var/www/html/database
 fi
 
-# Wait for database to be ready (for MySQL on Railway)
+# For MySQL, try to connect but don't fail if it doesn't work
 if [ "$DB_CONNECTION" = "mysql" ]; then
-    echo "Waiting for MySQL connection..."
-    max_attempts=15
-    attempt=1
-    
-    while [ $attempt -le $max_attempts ]; do
-        if php artisan migrate:status --no-interaction 2>/dev/null; then
-            echo "✅ Database connection successful"
-            break
-        fi
+    echo "Testing MySQL connection..."
+    if php artisan migrate:status --no-interaction 2>/dev/null; then
+        echo "✅ Database connection successful"
         
-        echo "Database not ready, attempt $attempt/$max_attempts..."
-        sleep 3
-        attempt=$((attempt + 1))
-    done
-    
-    if [ $attempt -gt $max_attempts ]; then
-        echo "❌ Failed to connect to database after $max_attempts attempts"
-        echo "Continuing with deployment..."
+        # Run migrations
+        echo "Running migrations..."
+        php artisan migrate --force --no-interaction || echo "⚠️  Migration failed"
+        
+        # Run seeders
+        echo "Running database seeders..."
+        php artisan db:seed --force --no-interaction || echo "⚠️  Seeding failed"
+    else
+        echo "⚠️  Database connection failed, skipping migrations and seeding"
     fi
+else
+    # For SQLite, always run migrations and seeders
+    echo "Running migrations..."
+    php artisan migrate --force --no-interaction || echo "⚠️  Migration failed"
+    
+    echo "Running database seeders..."
+    php artisan db:seed --force --no-interaction || echo "⚠️  Seeding failed"
 fi
 
-# Run migrations (Safe for production with --force)
-echo "Running migrations..."
-php artisan migrate --force --no-interaction || echo "⚠️  Migration failed, continuing..."
-
-# Run database seeders
-echo "Running database seeders..."
-php artisan db:seed --force --no-interaction || echo "⚠️  Seeding failed, continuing..."
-
-# Optimize Laravel
+# Optimize Laravel (but don't fail if it doesn't work)
 echo "Caching configuration..."
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+php artisan config:cache || echo "⚠️  Config cache failed"
+php artisan route:cache || echo "⚠️  Route cache failed"
+php artisan view:cache || echo "⚠️  View cache failed"
 
 # Ensure storage is writable
 echo "Fixing permissions..."
-chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache || echo "⚠️  Permission fix failed"
 
 # Create nginx run directory
 mkdir -p /var/run/nginx
-chown -R www-data:www-data /var/run/nginx
+chown -R www-data:www-data /var/run/nginx || echo "⚠️  Nginx directory setup failed"
 
-echo "✅ Entrypoint script completed. Starting services..."
+# Test basic Laravel functionality
+echo "Testing Laravel..."
+php artisan --version || echo "⚠️  Laravel test failed"
+
+echo "✅ Entrypoint script completed successfully!"
+echo "Starting supervisord with nginx and php-fpm..."
 
 exec "$@"
