@@ -6,7 +6,7 @@
         />
 
         <section
-            class="mx-auto max-w-4xl rounded-xl bg-white shadow-lg border border-gray-200 p-4 sm:p-6 lg:p-8"
+            class="relative mx-auto max-w-4xl rounded-xl bg-white shadow-lg border border-gray-200 p-4 sm:p-6 lg:p-8"
             :class="{ 'opacity-50 pointer-events-none': isPageLoading }"
             role="main"
             aria-label="Technical assessment interface"
@@ -33,19 +33,28 @@
 
             <Timer :time-remaining="timeRemaining" />
 
-            <!-- Progress Save Indicator -->
-            <div 
-                v-if="isSaving" 
-                class="mb-4 flex items-center justify-center gap-2 rounded-lg bg-blue-50 p-2 text-sm text-blue-700"
-                role="status"
-                aria-live="polite"
+            <!-- Progress Save Indicator - Absolutely positioned to prevent layout shifts -->
+            <Transition
+                enter-active-class="transition-all duration-300 ease-out"
+                enter-from-class="opacity-0 translate-y-2"
+                enter-to-class="opacity-100 translate-y-0"
+                leave-active-class="transition-all duration-200 ease-in"
+                leave-from-class="opacity-100 translate-y-0"
+                leave-to-class="opacity-0 translate-y-2"
             >
-                <svg class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Saving progress...
-            </div>
+                <div 
+                    v-if="isSaving" 
+                    class="absolute top-4 right-4 z-10 flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-2 text-sm text-blue-700 shadow-md border border-blue-200"
+                    role="status"
+                    aria-live="polite"
+                >
+                    <svg class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Saving...
+                </div>
+            </Transition>
 
             <form @submit.prevent="submitTest" role="form" aria-label="Assessment questions form">
                 <article
@@ -157,9 +166,13 @@ const getCsrfToken = () => {
 };
 
 const saveProgress = async () => {
-    try {
+    let showSaving = false;
+    const savingTimeout = setTimeout(() => {
+        showSaving = true;
         isSaving.value = true;
-        
+    }, 200); // Only show saving indicator if save takes longer than 200ms
+
+    try {
         const answers = {};
         questions.value.forEach((q) => {
             if (q.selectedAnswer) {
@@ -198,7 +211,15 @@ const saveProgress = async () => {
         // Don't throw the error to prevent disrupting the user experience
         // but log it for debugging
     } finally {
-        isSaving.value = false;
+        clearTimeout(savingTimeout);
+        if (showSaving) {
+            // Add a small delay before hiding to prevent flashing
+            setTimeout(() => {
+                isSaving.value = false;
+            }, 100);
+        } else {
+            isSaving.value = false;
+        }
     }
 };
 
