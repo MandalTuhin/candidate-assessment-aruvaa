@@ -8,7 +8,7 @@ services:
     environment:
       - APP_NAME=Laravel
       - APP_ENV=local
-      - APP_KEY=${APP_KEY}
+      - APP_KEY=${APP_KEY:-base64:W/BWX7JJyLGF1ZIh0QId6UPcvUN6uAhynzUxbRyvUNQ=}
       - APP_DEBUG=true
       - APP_URL=http://localhost:8080
       - DB_CONNECTION=sqlite

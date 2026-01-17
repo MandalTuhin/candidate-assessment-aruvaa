@@ -3,6 +3,11 @@
 use App\Http\Controllers\AssessmentController;
 use Illuminate\Support\Facades\Route;
 
+// Health check endpoint for Railway
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok', 'timestamp' => now()]);
+});
+
 Route::get('/', [AssessmentController::class, 'index'])->name('home');
 
 // This handles the form submission from the landing page

@@ -50,10 +50,13 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 # Install Node dependencies and build assets
 RUN npm ci && npm run build && rm -rf node_modules
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html \
+# Create necessary directories and set permissions
+RUN mkdir -p /var/www/html/database \
+    && touch /var/www/html/database/database.sqlite \
+    && chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache
+    && chmod -R 755 /var/www/html/bootstrap/cache \
+    && chmod -R 755 /var/www/html/database
 
 # Copy nginx configuration
 COPY docker/nginx.conf /etc/nginx/nginx.conf
