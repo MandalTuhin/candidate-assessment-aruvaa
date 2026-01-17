@@ -10,6 +10,17 @@
 
 ---
 
+## 👨‍💻 Developer Information
+
+**Tuhin Mandal**
+- 📧 **Email:** [mandaltuhin7@gmail.com](mailto:mandaltuhin7@gmail.com)
+- 📱 **Phone:** [+91 9934227320](tel:+919934227320)
+- 🐙 **GitHub:** [github.com/MandalTuhin](https://github.com/MandalTuhin)
+- 💼 **LinkedIn:** [linkedin.com/in/tuhin-mandal-2157102aa](https://www.linkedin.com/in/tuhin-mandal-2157102aa/)
+- 🌐 **Repository:** [github.com/MandalTuhin/candidate-assesment-aruvaa](https://github.com/MandalTuhin/candidate-assesment-aruvaa/)
+
+---
+
 ## 📋 Assignment Requirements Compliance
 
 ### ✅ **Core Features Implemented**
@@ -36,7 +47,7 @@
 
 ### **Option 1: One-Command Setup**
 ```bash
-git clone <repository-url> && cd candidate-assessment
+git clone https://github.com/MandalTuhin/candidate-assesment-aruvaa.git && cd candidate-assessment
 composer install && npm install
 cp .env.example .env && php artisan key:generate
 php artisan migrate:fresh --seed && npm run build
@@ -46,7 +57,7 @@ php artisan serve
 ### **Option 2: Step-by-Step Setup**
 ```bash
 # 1. Clone and install dependencies
-git clone <repository-url>
+git clone https://github.com/MandalTuhin/candidate-assesment-aruvaa.git
 cd candidate-assessment
 composer install
 npm install
@@ -542,7 +553,23 @@ npm run build
 
 ---
 
-## 📞 Support & Documentation
+---
+
+## 📞 Contact & Support
+
+### **Developer Contact**
+For any questions, feedback, or technical support regarding this assessment system:
+
+**Tuhin Mandal**
+- 📧 **Email:** [mandaltuhin7@gmail.com](mailto:mandaltuhin7@gmail.com)
+- 📱 **Phone:** [+91 9934227320](tel:+919934227320)
+- 🐙 **GitHub:** [github.com/MandalTuhin](https://github.com/MandalTuhin)
+- 💼 **LinkedIn:** [linkedin.com/in/tuhin-mandal-2157102aa](https://www.linkedin.com/in/tuhin-mandal-2157102aa/)
+
+### **Repository Information**
+- 🌐 **Project Repository:** [github.com/MandalTuhin/candidate-assesment-aruvaa](https://github.com/MandalTuhin/candidate-assesment-aruvaa/)
+- 📋 **Issues & Bug Reports:** [Submit an Issue](https://github.com/MandalTuhin/candidate-assesment-aruvaa/issues)
+- 🔄 **Pull Requests:** [Contribute](https://github.com/MandalTuhin/candidate-assesment-aruvaa/pulls)
 
 ### **Assignment Compliance**
 This application fully meets all assignment requirements including:
@@ -579,3 +606,5 @@ This project is open-sourced software licensed under the [MIT license](https://o
 ---
 
 **🎉 Ready for evaluation! The application demonstrates professional Laravel development with modern frontend technologies, comprehensive security measures, and production-ready code quality.**
+
+*Developed with ❤️ by [Tuhin Mandal](https://github.com/MandalTuhin)*
