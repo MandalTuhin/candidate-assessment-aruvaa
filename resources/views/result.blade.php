@@ -9,7 +9,7 @@
     </head>
     <body class="bg-gray-100 min-h-screen flex items-center justify-center p-3 sm:p-4" x-data="{ reviewOpen: false }">
         <div
-            class="bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-lg w-full max-w-2xl text-center"
+            class="bg-whhttp://localhost:8000/ite p-4 sm:p-6 md:p-8 rounded-lg shadow-lg w-full max-w-2xl text-center"
         >
             @if ($errors->any())
             <div
@@ -96,7 +96,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                 </button>
-                
+
                 <div
                     x-show="reviewOpen"
                     x-transition:enter="transition ease-out duration-300"

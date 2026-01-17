@@ -5,12 +5,12 @@
 [x] make ui responsive (mobile responsive)
 [x] add a question miniMap (like clicking on 1 navigates me to 1 number question)
 
-[] change cursor-pointer for all btns
-[] make the loading overlay have some overlay
+[done] change cursor-pointer for all btns
+[done] make the loading overlay have some overlay
 [] fix responsiveness and buldge of the minimap in small screens
-[] fix colors and contrast. 
-[] fix borders of options
-[] fix margin-top for spacing in review cards
+[] fix colors and contrast.
+[done] fix borders of options
+[done] fix margin-top for spacing in review cards
 
 [] see if the
-[] test functionelity 
+[] test functionelity
