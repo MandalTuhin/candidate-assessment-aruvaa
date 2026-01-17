@@ -16,6 +16,21 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        // Handle file upload size exceeded errors
+        $exceptions->render(function (\Symfony\Component\HttpFoundation\File\Exception\FileException $e) {
+            return back()->with('error', 'File upload failed. Please ensure your file is under 2MB and try again.');
+        });
+
+        // Handle database connection errors
+        $exceptions->render(function (\Illuminate\Database\QueryException $e) {
+            \Log::error('Database connection error: '.$e->getMessage());
+
+            return back()->with('error', 'Database connection failed. Please check your internet connection and try again.');
+        });
+
+        // Handle file size exceeded errors specifically
+        $exceptions->render(function (\Illuminate\Http\Exceptions\PostTooLargeException $e) {
+            return back()->with('error', 'The uploaded file is too large. Maximum file size is 2MB.');
+        });
     })
     ->create();

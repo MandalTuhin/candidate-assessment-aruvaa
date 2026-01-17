@@ -7,8 +7,25 @@
                 Select Programming Languages
             </h1>
 
+            <!-- Database Error Message -->
+            <div
+                v-if="error"
+                class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"
+            >
+                <p class="font-bold">Connection Error</p>
+                <p class="text-sm">{{ error }}</p>
+            </div>
+
+            <!-- Flash Messages -->
+            <div
+                v-if="$page.props.flash?.error"
+                class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"
+            >
+                {{ $page.props.flash.error }}
+            </div>
+
             <form @submit.prevent="submit">
-                <!-- Error Messages -->
+                <!-- Validation Error Messages -->
                 <div
                     v-if="form.errors && Object.keys(form.errors).length > 0"
                     class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"
@@ -33,10 +50,12 @@
 
                 <button
                     type="submit"
-                    :disabled="form.processing"
+                    :disabled="form.processing || languages.length === 0"
                     class="w-full bg-blue-600 cursor-pointer text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    <span v-if="!form.processing">Start Test</span>
+                    <span v-if="!form.processing">
+                        {{ languages.length === 0 ? 'Loading...' : 'Start Test' }}
+                    </span>
                     <span v-else>Starting...</span>
                 </button>
             </form>
@@ -51,6 +70,7 @@ import CandidateForm from "@/Components/Welcome/CandidateForm.vue";
 
 const props = defineProps({
     languages: Array,
+    error: String,
 });
 
 const form = useForm({
