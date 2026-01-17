@@ -3,14 +3,32 @@
 namespace App\Http\Controllers;
 
 use App\Models\Language;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Inertia\Response;
 
+/**
+ * AssessmentController
+ *
+ * Handles the complete candidate technical assessment workflow including
+ * language selection, test execution, progress tracking, and result processing.
+ *
+ * @author Laravel Assessment System
+ *
+ * @version 1.0.0
+ */
 class AssessmentController extends Controller
 {
     /**
      * Display the language selection page.
+     *
+     * Shows the initial landing page where candidates can select their preferred
+     * programming languages for the technical assessment. Retrieves all available
+     * languages from the database and passes them to the Vue.js Welcome component.
+     *
+     * @return Response The Inertia response with languages data
      */
-    public function index()
+    public function index(): Response
     {
         $languages = Language::all();
 
@@ -21,8 +39,18 @@ class AssessmentController extends Controller
 
     /**
      * Process the language selection and start the test.
+     *
+     * Validates the candidate's form submission including name, email, and selected
+     * programming languages. Clears any existing test session data to prevent
+     * conflicts and stores the candidate information in the session for use
+     * throughout the assessment process.
+     *
+     * @param  Request  $request  The HTTP request containing candidate data
+     * @return RedirectResponse Redirect to the test display page
+     *
+     * @throws \Illuminate\Validation\ValidationException When validation fails
      */
-    public function startTest(Request $request)
+    public function startTest(Request $request): RedirectResponse
     {
         // Validate: Ensure 'languages' is present, is an array, and has at least 1 item.
         $request->validate([
@@ -45,6 +73,16 @@ class AssessmentController extends Controller
         return redirect()->route('test.show');
     }
 
+    /**
+     * Display the assessment test interface.
+     *
+     * Retrieves questions based on selected languages, manages timer state to prevent
+     * cheating, handles partial progress restoration, and prepares all necessary data
+     * for the Vue.js Assessment component. Implements anti-cheat measures by tracking
+     * test start time server-side and calculating remaining time based on elapsed time.
+     *
+     * @return Response|RedirectResponse Inertia response with test data or redirect if invalid
+     */
     public function showTest()
     {
         // Retrieve the IDs we saved in the session
@@ -71,8 +109,8 @@ class AssessmentController extends Controller
         // Handle timer state - if no timer start time exists, set it now
         $testStartTime = session('test_start_time');
         $testDuration = 300; // 5 minutes in seconds
-        
-        if (!$testStartTime) {
+
+        if (! $testStartTime) {
             $testStartTime = now()->timestamp;
             session(['test_start_time' => $testStartTime]);
         }
@@ -107,7 +145,18 @@ class AssessmentController extends Controller
         ]);
     }
 
-    public function submitTest(Request $request)
+    /**
+     * Process test submission and calculate results.
+     *
+     * Handles the final test submission by processing all answers, calculating
+     * the score, generating detailed analytics, and storing the assessment record
+     * in the database. Prepares comprehensive review data including question-by-question
+     * analysis for the result page.
+     *
+     * @param  Request  $request  The HTTP request containing user answers
+     * @return RedirectResponse Redirect to the result page
+     */
+    public function submitTest(Request $request): RedirectResponse
     {
         // Get user answers from the request
         $userAnswers = $request->input('answers', []); // format: [question_id => selected_option]
@@ -180,15 +229,34 @@ class AssessmentController extends Controller
         return redirect()->route('test.result');
     }
 
-    public function submitExpiredTest()
+    /**
+     * Handle automatic test submission when time expires.
+     *
+     * Called when the assessment timer reaches zero. Automatically submits
+     * the test with whatever answers were previously saved in the session,
+     * ensuring no candidate can extend their time beyond the limit.
+     *
+     * @return RedirectResponse Redirect to the result page via submitTest
+     */
+    public function submitExpiredTest(): RedirectResponse
     {
         // Get saved progress from session
         $savedProgress = session('test_progress', []);
-        
+
         // Submit the test with whatever answers were saved
         return $this->submitTest(new Request(['answers' => $savedProgress]));
     }
 
+    /**
+     * Display the assessment results page.
+     *
+     * Shows the candidate's final score, detailed analytics, and conditional
+     * features based on performance. If the score meets the threshold (50%),
+     * enables resume upload functionality. Includes comprehensive question
+     * review data for candidate learning.
+     *
+     * @return Response|RedirectResponse Inertia response with results or redirect if no session
+     */
     public function showResult()
     {
         $score = session('last_score', 0);
@@ -215,7 +283,20 @@ class AssessmentController extends Controller
         ]);
     }
 
-    public function uploadResume(Request $request)
+    /**
+     * Handle resume file upload for successful candidates.
+     *
+     * Processes resume uploads for candidates who passed the assessment.
+     * Validates file type (PDF, DOC, DOCX), size (max 2MB), and associates
+     * the uploaded file with the specific assessment record. Implements
+     * secure file storage and proper error handling.
+     *
+     * @param  Request  $request  The HTTP request containing the resume file
+     * @return RedirectResponse Back to previous page with success/error message
+     *
+     * @throws \Illuminate\Validation\ValidationException When file validation fails
+     */
+    public function uploadResume(Request $request): RedirectResponse
     {
         $request->validate([
             'resume' => 'required|file|mimes:pdf,doc,docx|max:2048',
@@ -240,7 +321,18 @@ class AssessmentController extends Controller
         return back()->with('error', 'File upload failed.');
     }
 
-    public function saveProgress(Request $request)
+    /**
+     * Save candidate's progress during the assessment.
+     *
+     * Stores the candidate's current answers in the session to enable
+     * progress restoration if they navigate away or experience connection
+     * issues. Called automatically when answers are selected or navigation
+     * occurs during the test.
+     *
+     * @param  Request  $request  The HTTP request containing current answers
+     * @return \Illuminate\Http\JsonResponse JSON response confirming save status
+     */
+    public function saveProgress(Request $request): \Illuminate\Http\JsonResponse
     {
         $answers = $request->input('answers', []);
 
