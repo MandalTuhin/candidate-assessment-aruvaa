@@ -192,18 +192,33 @@ class AssessmentController extends Controller
     public function uploadResume(UploadResumeRequest $request): RedirectResponse
     {
         try {
+            Log::info('Resume upload started', [
+                'request_data' => $request->all(),
+                'files' => $request->allFiles()
+            ]);
+            
             $validated = $request->validated();
+            
+            Log::info('Validation passed', ['validated' => $validated]);
 
             $this->fileUploadService->uploadResume(
                 $validated['resume'],
                 $validated['assessment_id']
             );
 
+            Log::info('Resume upload completed successfully');
+
             return back()->with('success', 'Resume uploaded successfully! Your application is now complete.');
         } catch (\InvalidArgumentException $e) {
+            Log::error('Resume upload validation error', ['error' => $e->getMessage()]);
             return back()->with('error', $e->getMessage());
         } catch (\Exception $e) {
-            Log::error('Resume upload error: '.$e->getMessage());
+            Log::error('Resume upload error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
             return back()->with('error', 'Resume upload failed due to a server error. Please try again or contact support.');
         }
     }

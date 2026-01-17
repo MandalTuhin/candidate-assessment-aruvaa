@@ -65,6 +65,49 @@ Route::get('/test-storage', function () {
     ]);
 });
 
+// Test file upload functionality
+Route::post('/test-upload', function (\Illuminate\Http\Request $request) {
+    try {
+        \Log::info('Test upload started', ['files' => $request->allFiles()]);
+        
+        if (!$request->hasFile('file')) {
+            return response()->json(['error' => 'No file uploaded'], 400);
+        }
+        
+        $file = $request->file('file');
+        \Log::info('File details', [
+            'original_name' => $file->getClientOriginalName(),
+            'size' => $file->getSize(),
+            'mime_type' => $file->getMimeType(),
+            'extension' => $file->getClientOriginalExtension(),
+            'is_valid' => $file->isValid(),
+        ]);
+        
+        // Try to store the file
+        $path = $file->store('test-uploads', 'public');
+        \Log::info('File stored successfully', ['path' => $path]);
+        
+        return response()->json([
+            'success' => true,
+            'path' => $path,
+            'full_path' => storage_path('app/public/' . $path),
+            'file_exists' => \Storage::disk('public')->exists($path),
+        ]);
+        
+    } catch (\Exception $e) {
+        \Log::error('Test upload failed', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+        
+        return response()->json([
+            'error' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile(),
+        ], 500);
+    }
+});
+
 Route::get('/', [AssessmentController::class, 'index'])->name('home');
 
 // This handles the form submission from the landing page
