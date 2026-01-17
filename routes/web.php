@@ -130,53 +130,93 @@ Route::get('/test-assessments', function () {
 
 // Test resume upload process
 Route::post('/test-resume-upload', function (\Illuminate\Http\Request $request) {
+    // Enable detailed error reporting
+    ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+    
     try {
-        \Log::info('Test resume upload started', $request->all());
+        // Log the start
+        \Log::info('=== Test resume upload started ===');
+        \Log::info('Request files:', $request->allFiles());
+        \Log::info('Request data:', $request->all());
         
-        // Create a test assessment first
+        // Check if file exists
+        if (!$request->hasFile('resume')) {
+            \Log::error('No resume file in request');
+            return response()->json(['error' => 'No resume file uploaded'], 400);
+        }
+        
+        $file = $request->file('resume');
+        \Log::info('File object created successfully');
+        
+        // Get file details safely
+        $fileDetails = [
+            'name' => $file->getClientOriginalName(),
+            'size' => $file->getSize(),
+            'extension' => $file->getClientOriginalExtension(),
+            'mime_type' => $file->getMimeType(),
+            'is_valid' => $file->isValid(),
+            'error_code' => $file->getError(),
+        ];
+        \Log::info('File details:', $fileDetails);
+        
+        // Test storage directory
+        $storageDir = storage_path('app/public/resumes');
+        \Log::info('Storage directory check:', [
+            'path' => $storageDir,
+            'exists' => is_dir($storageDir),
+            'writable' => is_writable($storageDir),
+        ]);
+        
+        // Try simple file storage first
+        \Log::info('Attempting to store file...');
+        $path = $file->store('test-resumes', 'public');
+        \Log::info('File stored successfully at: ' . $path);
+        
+        // Check if file actually exists
+        $fullPath = storage_path('app/public/' . $path);
+        $fileExists = file_exists($fullPath);
+        \Log::info('File existence check:', [
+            'full_path' => $fullPath,
+            'exists' => $fileExists,
+            'size_on_disk' => $fileExists ? filesize($fullPath) : 'N/A'
+        ]);
+        
+        // Try creating assessment (this might be the issue)
+        \Log::info('Creating test assessment...');
         $assessment = \App\Models\Assessment::create([
             'candidate_name' => 'Test User',
             'candidate_email' => 'test@example.com',
             'score' => 85,
         ]);
+        \Log::info('Assessment created with ID: ' . $assessment->id);
         
-        \Log::info('Test assessment created', ['id' => $assessment->id]);
-        
-        if (!$request->hasFile('resume')) {
-            return response()->json(['error' => 'No resume file uploaded'], 400);
-        }
-        
-        $file = $request->file('resume');
-        \Log::info('Resume file details', [
-            'name' => $file->getClientOriginalName(),
-            'size' => $file->getSize(),
-            'extension' => $file->getClientOriginalExtension(),
-        ]);
-        
-        // Test the exact same process as the real upload
-        $path = $file->store('resumes', 'public');
-        \Log::info('Resume stored', ['path' => $path]);
-        
+        // Update assessment with resume path
+        \Log::info('Updating assessment with resume path...');
         $assessment->update(['resume_path' => $path]);
-        \Log::info('Assessment updated with resume path');
+        \Log::info('Assessment updated successfully');
         
         return response()->json([
             'success' => true,
             'assessment_id' => $assessment->id,
             'resume_path' => $path,
-            'file_exists' => \Storage::disk('public')->exists($path),
+            'file_details' => $fileDetails,
+            'file_exists_on_disk' => $fileExists,
+            'full_path' => $fullPath,
         ]);
         
     } catch (\Exception $e) {
-        \Log::error('Test resume upload failed', [
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]);
+        \Log::error('=== Test resume upload FAILED ===');
+        \Log::error('Error message: ' . $e->getMessage());
+        \Log::error('Error file: ' . $e->getFile());
+        \Log::error('Error line: ' . $e->getLine());
+        \Log::error('Stack trace: ' . $e->getTraceAsString());
         
         return response()->json([
             'error' => $e->getMessage(),
             'line' => $e->getLine(),
-            'file' => $e->getFile(),
+            'file' => basename($e->getFile()),
+            'type' => get_class($e),
         ], 500);
     }
 });
@@ -198,7 +238,33 @@ Route::get('/upload-test-form', function () {
             <li>Resumes dir writable: ' . (is_writable(storage_path('app/public/resumes')) ? '✅ Yes' : '❌ No') . '</li>
             <li>PHP upload limit: ' . ini_get('upload_max_filesize') . '</li>
         </ul>
+        <p><a href="/check-logs" style="color: #007cba;">Check Recent Logs</a></p>
     </body></html>')->header('Content-Type', 'text/html');
+});
+
+// Check recent logs
+Route::get('/check-logs', function () {
+    try {
+        $logFile = storage_path('logs/laravel.log');
+        if (!file_exists($logFile)) {
+            return response()->json(['error' => 'Log file not found']);
+        }
+        
+        // Get last 50 lines of log
+        $lines = file($logFile);
+        $recentLines = array_slice($lines, -50);
+        
+        return response('<html><head><title>Recent Logs</title></head><body style="font-family: monospace; padding: 20px;">
+            <h2>Recent Laravel Logs (Last 50 lines)</h2>
+            <pre style="background: #f5f5f5; padding: 15px; overflow-x: auto;">' . 
+            htmlspecialchars(implode('', $recentLines)) . 
+            '</pre>
+            <p><a href="/upload-test-form">← Back to Upload Test</a></p>
+        </body></html>')->header('Content-Type', 'text/html');
+        
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()]);
+    }
 });
 
 Route::get('/', [AssessmentController::class, 'index'])->name('home');
