@@ -15,6 +15,7 @@
 **Tuhin Mandal**
 - 📧 **Email:** [mandaltuhin7@gmail.com](mailto:mandaltuhin7@gmail.com)
 - 📱 **Phone:** [+91 9934227320](tel:+919934227320)
+- 🌐 **Portfolio:** [tuhin-mandal-portfolio.vercel.app](https://tuhin-mandal-portfolio.vercel.app/)
 - 🐙 **GitHub:** [github.com/MandalTuhin](https://github.com/MandalTuhin)
 - 💼 **LinkedIn:** [linkedin.com/in/tuhin-mandal-2157102aa](https://www.linkedin.com/in/tuhin-mandal-2157102aa/)
 - 🌐 **Repository:** [github.com/MandalTuhin/candidate-assesment-aruvaa](https://github.com/MandalTuhin/candidate-assesment-aruvaa/)
@@ -563,7 +564,8 @@ For any questions, feedback, or technical support regarding this assessment syst
 **Tuhin Mandal**
 - 📧 **Email:** [mandaltuhin7@gmail.com](mailto:mandaltuhin7@gmail.com)
 - 📱 **Phone:** [+91 9934227320](tel:+919934227320)
-- 🐙 **GitHub:** [github.com/MandalTuhin](https://github.com/MandalTuhin)
+- 🌐 **Portfolio:** [tuhin-mandal-portfolio.vercel.app](https://tuhin-mandal-portfolio.vercel.app/)
+- � **GiitHub:** [github.com/MandalTuhin](https://github.com/MandalTuhin)
 - 💼 **LinkedIn:** [linkedin.com/in/tuhin-mandal-2157102aa](https://www.linkedin.com/in/tuhin-mandal-2157102aa/)
 
 ### **Repository Information**
