@@ -53,6 +53,7 @@ RUN npm ci && npm run build && rm -rf node_modules
 # Create necessary directories and set permissions
 RUN mkdir -p /var/www/html/database \
     && touch /var/www/html/database/database.sqlite \
+    && mkdir -p /var/www/html/storage/app/public/resumes \
     && chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache \

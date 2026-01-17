@@ -73,6 +73,12 @@ php artisan view:cache || echo "⚠️  View cache failed"
 echo "Creating storage link..."
 php artisan storage:link || echo "⚠️  Storage link creation failed"
 
+# Create resumes directory
+echo "Creating resumes directory..."
+mkdir -p /var/www/html/storage/app/public/resumes
+chown -R www-data:www-data /var/www/html/storage/app/public/resumes
+chmod -R 775 /var/www/html/storage/app/public/resumes
+
 # Ensure storage is writable
 echo "Fixing permissions..."
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache || echo "⚠️  Permission fix failed"
