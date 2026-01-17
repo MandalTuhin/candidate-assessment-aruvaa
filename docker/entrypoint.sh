@@ -15,12 +15,17 @@ if [ -z "$APP_KEY" ]; then
     exit 1
 fi
 
-# Create database directory if it doesn't exist (for SQLite)
+# Create database directory and file for SQLite
 if [ "$DB_CONNECTION" = "sqlite" ] || [ -z "$DB_CONNECTION" ]; then
     echo "Setting up SQLite database..."
     mkdir -p /var/www/html/database
     touch /var/www/html/database/database.sqlite
+    chmod 664 /var/www/html/database/database.sqlite
     chown -R www-data:www-data /var/www/html/database
+    
+    # Set the database path for Laravel
+    export DB_DATABASE="/var/www/html/database/database.sqlite"
+    echo "SQLite database path: $DB_DATABASE"
 fi
 
 # For MySQL, try to connect but don't fail if it doesn't work
