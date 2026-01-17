@@ -3,6 +3,9 @@
 set -e
 
 echo "🚀 Starting deployment..."
+echo "Environment: APP_ENV=${APP_ENV:-not_set}"
+echo "Database: DB_CONNECTION=${DB_CONNECTION:-not_set}"
+echo "App Key: APP_KEY=${APP_KEY:+set}"
 
 # Check if APP_KEY is set
 if [ -z "$APP_KEY" ]; then
@@ -69,6 +72,8 @@ if ! php artisan --version >/dev/null 2>&1; then
     exit 1
 fi
 
-echo "✅ Entrypoint script completed. Handing off to Supervisor."
+echo "✅ Entrypoint script completed. Starting services..."
+echo "Nginx will be available on port 8080"
+echo "PHP-FPM will be available on port 9000"
 
 exec "$@"

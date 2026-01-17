@@ -25,6 +25,17 @@ Route::get('/health', function () {
     }
 });
 
+// Simple debug endpoint
+Route::get('/debug', function () {
+    return response()->json([
+        'message' => 'Laravel is running!',
+        'timestamp' => now(),
+        'env' => app()->environment(),
+        'php_version' => PHP_VERSION,
+        'laravel_version' => app()->version()
+    ]);
+});
+
 Route::get('/', [AssessmentController::class, 'index'])->name('home');
 
 // This handles the form submission from the landing page
