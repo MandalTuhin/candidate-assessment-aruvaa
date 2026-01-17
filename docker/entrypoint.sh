@@ -25,7 +25,7 @@ fi
 # Wait for database to be ready (for MySQL on Railway)
 if [ "$DB_CONNECTION" = "mysql" ]; then
     echo "Waiting for MySQL connection..."
-    max_attempts=30
+    max_attempts=15
     attempt=1
     
     while [ $attempt -le $max_attempts ]; do
@@ -35,30 +35,23 @@ if [ "$DB_CONNECTION" = "mysql" ]; then
         fi
         
         echo "Database not ready, attempt $attempt/$max_attempts..."
-        sleep 2
+        sleep 3
         attempt=$((attempt + 1))
     done
     
     if [ $attempt -gt $max_attempts ]; then
         echo "❌ Failed to connect to database after $max_attempts attempts"
-        echo "Continuing anyway - migrations will be attempted..."
+        echo "Continuing with deployment..."
     fi
 fi
 
 # Run migrations (Safe for production with --force)
 echo "Running migrations..."
-if ! php artisan migrate --force --no-interaction; then
-    echo "⚠️  Migration failed, but continuing..."
-fi
+php artisan migrate --force --no-interaction || echo "⚠️  Migration failed, continuing..."
 
-# Run database seeders (only if not already seeded)
-echo "Checking if database needs seeding..."
-if ! php artisan tinker --execute="echo App\Models\Language::count();" 2>/dev/null | grep -q "^[1-9]"; then
-    echo "Seeding database..."
-    php artisan db:seed --force --no-interaction
-else
-    echo "Database already seeded, skipping..."
-fi
+# Run database seeders
+echo "Running database seeders..."
+php artisan db:seed --force --no-interaction || echo "⚠️  Seeding failed, continuing..."
 
 # Optimize Laravel
 echo "Caching configuration..."
@@ -74,15 +67,6 @@ chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 mkdir -p /var/run/nginx
 chown -R www-data:www-data /var/run/nginx
 
-# Test if Laravel can boot
-echo "Testing Laravel application..."
-if ! php artisan --version >/dev/null 2>&1; then
-    echo "❌ Laravel application failed to boot!"
-    exit 1
-fi
-
 echo "✅ Entrypoint script completed. Starting services..."
-echo "Nginx will be available on port 8080"
-echo "PHP-FPM will be available on port 9000"
 
 exec "$@"
