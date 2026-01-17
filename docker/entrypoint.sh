@@ -15,10 +15,14 @@ if [ -z "$APP_KEY" ]; then
     exit 1
 fi
 
-# Force HTTPS for asset URLs in production
+# Force HTTPS for all URLs in production
 if [ "$APP_ENV" = "production" ]; then
     export ASSET_URL="https://candidate-asesment-aruvaa-production.up.railway.app"
+    export APP_URL="https://candidate-asesment-aruvaa-production.up.railway.app"
+    export FORCE_HTTPS="true"
     echo "Setting ASSET_URL to: $ASSET_URL"
+    echo "Setting APP_URL to: $APP_URL"
+    echo "Forcing HTTPS for all URLs"
 fi
 
 # Create database directory and file for SQLite

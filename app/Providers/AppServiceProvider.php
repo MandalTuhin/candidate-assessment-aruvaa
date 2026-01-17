@@ -9,6 +9,7 @@ use App\Services\FileUploadService;
 use App\Services\ScoringService;
 use App\Services\SessionService;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL;
 
 /**
  * AppServiceProvider
@@ -55,10 +56,13 @@ class AppServiceProvider extends ServiceProvider
      *
      * This method is called after all service providers have been registered.
      * Used for performing actions that depend on other services being available.
-     * Currently empty but available for future application bootstrapping.
+     * Forces HTTPS URLs in production environment for security.
      */
     public function boot(): void
     {
-        //
+        // Force HTTPS URLs in production
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
     }
 }
