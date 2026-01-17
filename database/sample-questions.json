@@ -1,0 +1,174 @@
+{
+  "languages": [
+    {
+      "name": "JavaScript",
+      "description": "A versatile programming language primarily used for web development, both frontend and backend applications."
+    },
+    {
+      "name": "Python", 
+      "description": "A high-level, interpreted programming language known for its simplicity and readability, widely used in data science, web development, and automation."
+    }
+  ],
+  "questions": {
+    "JavaScript": [
+      {
+        "question": "What is the output of 1 + \"1\" in JavaScript?",
+        "options": ["2", "11", "NaN", "undefined"],
+        "correctAnswer": "11",
+        "explanation": "JavaScript performs type coercion, converting the number 1 to string and concatenating."
+      },
+      {
+        "question": "Which keyword is used to declare a constant?",
+        "options": ["var", "let", "constant", "const"],
+        "correctAnswer": "const",
+        "explanation": "The 'const' keyword declares a block-scoped constant that cannot be reassigned."
+      },
+      {
+        "question": "What does \"NaN\" stand for?",
+        "options": ["Not a Number", "New and Next", "Null and None", "No available Name"],
+        "correctAnswer": "Not a Number",
+        "explanation": "NaN is a special value representing an invalid or undefined numerical result."
+      },
+      {
+        "question": "Which method adds an element to the end of an array?",
+        "options": ["pop()", "push()", "shift()", "unshift()"],
+        "correctAnswer": "push()",
+        "explanation": "The push() method adds one or more elements to the end of an array."
+      },
+      {
+        "question": "What is the correct syntax for an arrow function?",
+        "options": ["() => {}", "function => {}", "() -> {}", "=> () {}"],
+        "correctAnswer": "() => {}",
+        "explanation": "Arrow functions use the => syntax for concise function expressions."
+      },
+      {
+        "question": "Which operator checks for both value and type equality?",
+        "options": ["==", "=", "===", "!="],
+        "correctAnswer": "===",
+        "explanation": "The strict equality operator (===) checks both value and type without coercion."
+      },
+      {
+        "question": "How do you write an IF statement in JavaScript?",
+        "options": ["if i = 5", "if (i == 5)", "if i == 5 then", "if i = 5 then"],
+        "correctAnswer": "if (i == 5)",
+        "explanation": "JavaScript if statements require parentheses around the condition."
+      },
+      {
+        "question": "What is the use of \"use strict\" in JavaScript?",
+        "options": ["Enforces stricter parsing", "Enables new features", "Speeds up execution", "Ignores errors"],
+        "correctAnswer": "Enforces stricter parsing",
+        "explanation": "Strict mode catches common coding mistakes and prevents unsafe actions."
+      },
+      {
+        "question": "Which of these is NOT a primitive data type?",
+        "options": ["String", "Boolean", "Number", "Object"],
+        "correctAnswer": "Object",
+        "explanation": "Object is a complex data type, while String, Boolean, and Number are primitives."
+      },
+      {
+        "question": "How do you create a function in JavaScript?",
+        "options": ["function:myFunc()", "function = myFunc()", "function myFunc()", "new function myFunc()"],
+        "correctAnswer": "function myFunc()",
+        "explanation": "Functions are declared using the 'function' keyword followed by the function name."
+      },
+      {
+        "question": "What is the output of: console.log(typeof typeof 1)?",
+        "options": ["number", "string", "undefined", "object"],
+        "correctAnswer": "string",
+        "explanation": "typeof 1 returns 'number', and typeof 'number' returns 'string'."
+      },
+      {
+        "question": "Which method removes the last element from an array?",
+        "options": ["pop()", "push()", "shift()", "slice()"],
+        "correctAnswer": "pop()",
+        "explanation": "The pop() method removes and returns the last element of an array."
+      }
+    ],
+    "Python": [
+      {
+        "question": "Which keyword is used to create a function in Python?",
+        "options": ["func", "define", "def", "function"],
+        "correctAnswer": "def",
+        "explanation": "The 'def' keyword is used to define functions in Python."
+      },
+      {
+        "question": "What is the correct extension for Python files?",
+        "options": [".py", ".pyt", ".pt", ".pw"],
+        "correctAnswer": ".py",
+        "explanation": "Python source files use the .py extension."
+      },
+      {
+        "question": "How do you start a comment in Python?",
+        "options": ["//", "/*", "#", "--"],
+        "correctAnswer": "#",
+        "explanation": "Python uses the hash symbol (#) for single-line comments."
+      },
+      {
+        "question": "Which of these is a mutable data type?",
+        "options": ["Tuple", "String", "List", "Integer"],
+        "correctAnswer": "List",
+        "explanation": "Lists are mutable and can be modified after creation, unlike tuples and strings."
+      },
+      {
+        "question": "What is the output of print(2 ** 3)?",
+        "options": ["6", "8", "9", "16"],
+        "correctAnswer": "8",
+        "explanation": "The ** operator performs exponentiation: 2 to the power of 3 equals 8."
+      },
+      {
+        "question": "Which method is used to add an element to a list?",
+        "options": ["add()", "append()", "insert()", "push()"],
+        "correctAnswer": "append()",
+        "explanation": "The append() method adds a single element to the end of a list."
+      },
+      {
+        "question": "What is the output of print(10 / 3)?",
+        "options": ["3", "3.333...", "3.0", "3.33"],
+        "correctAnswer": "3.333...",
+        "explanation": "Python 3 division (/) returns a float with decimal precision."
+      },
+      {
+        "question": "Which keyword is used for exception handling?",
+        "options": ["except", "catch", "try", "handle"],
+        "correctAnswer": "try",
+        "explanation": "The 'try' keyword begins an exception handling block in Python."
+      },
+      {
+        "question": "What does the len() function return?",
+        "options": ["Length of an object", "Type of an object", "Memory size", "Index of an element"],
+        "correctAnswer": "Length of an object",
+        "explanation": "The len() function returns the number of items in a sequence or collection."
+      },
+      {
+        "question": "Which of these is NOT a Python data type?",
+        "options": ["List", "Dictionary", "Array", "Tuple"],
+        "correctAnswer": "Array",
+        "explanation": "Array is not a built-in Python data type; Python uses lists instead."
+      },
+      {
+        "question": "What is the output of print('Hello' * 3)?",
+        "options": ["HelloHelloHello", "Hello Hello Hello", "Hello3", "Error"],
+        "correctAnswer": "HelloHelloHello",
+        "explanation": "String multiplication repeats the string the specified number of times."
+      },
+      {
+        "question": "Which operator is used for floor division in Python?",
+        "options": ["/", "//", "%", "**"],
+        "correctAnswer": "//",
+        "explanation": "The // operator performs floor division, returning the integer part of the division."
+      }
+    ]
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "description": "Sample questions for Laravel Technical Assessment System",
+    "totalQuestions": 24,
+    "languages": 2,
+    "questionsPerLanguage": {
+      "JavaScript": 12,
+      "Python": 12
+    },
+    "difficulty": "Beginner to Intermediate",
+    "usage": "Import this JSON file to quickly populate the assessment database with sample questions"
+  }
+}

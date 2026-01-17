@@ -1,59 +1,288 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel Technical Assessment System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A comprehensive web application for conducting technical assessments with multiple programming languages, real-time scoring, and resume upload functionality.
 
-## About Laravel
+## 🚀 Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Multi-Language Assessment**: Support for JavaScript, Python, and more
+- **Dynamic Question Selection**: Random questions based on selected languages
+- **Real-Time Progress Tracking**: Save and restore partial progress
+- **Anti-Cheat Timer System**: Server-side timer prevents manipulation
+- **Score Analytics**: Detailed performance breakdown
+- **Conditional Resume Upload**: File upload for passing candidates
+- **Mobile Responsive**: Works seamlessly on all devices
+- **Vue.js + Inertia.js**: Modern SPA experience with Laravel backend
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🛠️ Tech Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Backend**: Laravel 12, PHP 8.5
+- **Frontend**: Vue.js 3, Inertia.js v2
+- **Styling**: Tailwind CSS v4
+- **Database**: SQLite (configurable)
+- **Testing**: Pest v4
+- **Code Quality**: Laravel Pint (PSR-12)
 
-## Learning Laravel
+## 📋 Quick Setup
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Prerequisites
+- PHP 8.5+
+- Composer
+- Node.js & npm
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Installation
 
-## Laravel Sponsors
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd candidate-assessment
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+2. **Install dependencies**
+   ```bash
+   composer install
+   npm install
+   ```
 
-### Premium Partners
+3. **Environment setup**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+4. **Database setup**
+   ```bash
+   php artisan migrate --seed
+   ```
 
-## Contributing
+5. **Build assets**
+   ```bash
+   npm run build
+   # or for development
+   npm run dev
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+6. **Start the server**
+   ```bash
+   php artisan serve
+   ```
 
-## Code of Conduct
+Visit `http://localhost:8000` to access the application.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 📊 Sample Questions Database
 
-## Security Vulnerabilities
+The application includes comprehensive sample questions for quick evaluation and testing.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Option 1: Using Seeder (Recommended)
+```bash
+php artisan migrate:fresh --seed
+```
 
-## License
+### Option 2: Using JSON Import
+```bash
+php artisan questions:import
+# or specify custom file
+php artisan questions:import --file=path/to/questions.json
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Sample Questions Structure
+
+The `database/sample-questions.json` file contains:
+- **24 total questions** (12 JavaScript + 12 Python)
+- **Multiple choice format** with 4 options each
+- **Explanations** for learning purposes
+- **Difficulty range**: Beginner to Intermediate
+
+#### JavaScript Topics Covered:
+- Type coercion and operators
+- Functions and arrow functions
+- Arrays and methods
+- Strict mode and best practices
+- Data types and primitives
+
+#### Python Topics Covered:
+- Function definitions and syntax
+- Data types and mutability
+- Operators and expressions
+- Exception handling
+- Built-in functions and methods
+
+### JSON Structure Example:
+```json
+{
+  "languages": [
+    {
+      "name": "JavaScript",
+      "description": "A versatile programming language..."
+    }
+  ],
+  "questions": {
+    "JavaScript": [
+      {
+        "question": "What is the output of 1 + \"1\" in JavaScript?",
+        "options": ["2", "11", "NaN", "undefined"],
+        "correctAnswer": "11",
+        "explanation": "JavaScript performs type coercion..."
+      }
+    ]
+  }
+}
+```
+
+## 🗄️ Database Schema
+
+The application uses a normalized database design with three main tables:
+
+### Languages Table
+```sql
+- id (Primary Key)
+- name (Unique)
+- description (Optional)
+- timestamps
+```
+
+### Questions Table
+```sql
+- id (Primary Key)
+- language_id (Foreign Key)
+- question_text (Text)
+- options (JSON Array)
+- correct_answer (String)
+- timestamps
+```
+
+### Assessments Table
+```sql
+- id (Primary Key)
+- candidate_name (String)
+- candidate_email (String)
+- score (Integer 0-100)
+- resume_path (String, Nullable)
+- timestamps
+```
+
+## 🎯 Assessment Flow
+
+1. **Language Selection**: Choose programming languages
+2. **Assessment**: Answer randomized questions with timer
+3. **Auto-Save**: Progress saved automatically
+4. **Results**: View score and detailed analytics
+5. **Resume Upload**: Available for passing scores (≥50%)
+
+## 🔒 Security Features
+
+- **Server-Side Timer**: Prevents client-side manipulation
+- **File Validation**: Resume uploads limited to PDF, DOC, DOCX
+- **Session Management**: Secure progress tracking
+- **CSRF Protection**: Laravel's built-in security
+- **Input Validation**: Comprehensive form validation
+
+## 🧪 Testing
+
+Run the test suite:
+```bash
+php artisan test
+```
+
+For specific test files:
+```bash
+php artisan test tests/Feature/AssessmentTest.php
+```
+
+## 📝 Code Quality
+
+The codebase follows PSR-12 standards with comprehensive documentation:
+
+```bash
+# Format code
+vendor/bin/pint
+
+# Check specific files
+vendor/bin/pint app/Http/Controllers/
+```
+
+## 🚀 Deployment
+
+### Production Setup
+1. Set `APP_ENV=production` in `.env`
+2. Configure database connection
+3. Run `php artisan config:cache`
+4. Run `php artisan route:cache`
+5. Run `npm run build`
+
+### Environment Variables
+```env
+APP_NAME="Laravel Assessment"
+APP_ENV=production
+APP_DEBUG=false
+DB_CONNECTION=sqlite
+DB_DATABASE=/path/to/database.sqlite
+```
+
+## 📁 Project Structure
+
+```
+├── app/
+│   ├── Http/Controllers/AssessmentController.php
+│   ├── Models/
+│   │   ├── Assessment.php
+│   │   ├── Language.php
+│   │   └── Question.php
+│   └── Console/Commands/ImportQuestionsFromJson.php
+├── database/
+│   ├── migrations/
+│   ├── seeders/QuestionSeeder.php
+│   └── sample-questions.json
+├── resources/
+│   ├── js/
+│   │   ├── Pages/
+│   │   │   ├── Welcome.vue
+│   │   │   ├── Assessment.vue
+│   │   │   └── Result.vue
+│   │   └── Components/
+│   └── css/app.css
+└── routes/web.php
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Follow PSR-12 coding standards
+4. Add tests for new features
+5. Submit a pull request
+
+## 📄 License
+
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+---
+
+## 🔧 Development Commands
+
+```bash
+# Start development server
+php artisan serve
+
+# Watch for file changes
+npm run dev
+
+# Run tests
+php artisan test
+
+# Fresh database with sample data
+php artisan migrate:fresh --seed
+
+# Import questions from JSON
+php artisan questions:import
+
+# Format code
+vendor/bin/pint
+```
+
+## 📞 Support
+
+For questions or issues, please create an issue in the repository or contact the development team.
+
+---
+
+**Built with ❤️ using Laravel, Vue.js, and modern web technologies.**
