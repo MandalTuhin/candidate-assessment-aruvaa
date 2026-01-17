@@ -18,7 +18,7 @@
 - 🌐 **Portfolio:** [tuhin-mandal-portfolio.vercel.app](https://tuhin-mandal-portfolio.vercel.app/)
 - 🐙 **GitHub:** [github.com/MandalTuhin](https://github.com/MandalTuhin)
 - 💼 **LinkedIn:** [linkedin.com/in/tuhin-mandal-2157102aa](https://www.linkedin.com/in/tuhin-mandal-2157102aa/)
-- 🌐 **Repository:** [github.com/MandalTuhin/candidate-assesment-aruvaa](https://github.com/MandalTuhin/candidate-assesment-aruvaa/)
+- 🌐 **Repository:** [github.com/MandalTuhin/candidate-assessment-aruvaa](https://github.com/MandalTuhin/candidate-assessment-aruvaa/)
 
 ---
 
@@ -48,7 +48,7 @@
 
 ### **Option 1: One-Command Setup**
 ```bash
-git clone https://github.com/MandalTuhin/candidate-assesment-aruvaa.git && cd candidate-assesment-aruvaa
+git clone https://github.com/MandalTuhin/candidate-assessment-aruvaa.git && cd candidate-assessment-aruvaa
 composer install && npm install
 cp .env.example .env && php artisan key:generate
 touch database/database.sqlite && php artisan migrate:fresh --seed && npm run build
@@ -58,8 +58,8 @@ php artisan serve
 ### **Option 2: Step-by-Step Setup**
 ```bash
 # 1. Clone and install dependencies
-git clone https://github.com/MandalTuhin/candidate-assesment-aruvaa.git
-cd candidate-assesment-aruvaa
+git clone https://github.com/MandalTuhin/candidate-assessment-aruvaa.git
+cd candidate-assessment-aruvaa
 composer install
 npm install
 
@@ -609,9 +609,9 @@ For any questions, feedback, or technical support regarding this assessment syst
 - 💼 **LinkedIn:** [linkedin.com/in/tuhin-mandal-2157102aa](https://www.linkedin.com/in/tuhin-mandal-2157102aa/)
 
 ### **Repository Information**
-- 🌐 **Project Repository:** [github.com/MandalTuhin/candidate-assesment-aruvaa](https://github.com/MandalTuhin/candidate-assesment-aruvaa/)
-- 📋 **Issues & Bug Reports:** [Submit an Issue](https://github.com/MandalTuhin/candidate-assesment-aruvaa/issues)
-- 🔄 **Pull Requests:** [Contribute](https://github.com/MandalTuhin/candidate-assesment-aruvaa/pulls)
+- 🌐 **Project Repository:** [github.com/MandalTuhin/candidate-assessment-aruvaa](https://github.com/MandalTuhin/candidate-assessment-aruvaa/)
+- 📋 **Issues & Bug Reports:** [Submit an Issue](https://github.com/MandalTuhin/candidate-assessment-aruvaa/issues)
+- 🔄 **Pull Requests:** [Contribute](https://github.com/MandalTuhin/candidate-assessment-aruvaa/pulls)
 
 ### **Assignment Compliance**
 This application fully meets all assignment requirements including:
