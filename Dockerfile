@@ -53,10 +53,13 @@ RUN npm ci && npm run build && rm -rf node_modules
 # Create necessary directories and set permissions
 RUN mkdir -p /var/www/html/database \
     && touch /var/www/html/database/database.sqlite \
+    && mkdir -p /tmp/nginx_client_temp /tmp/nginx_proxy_temp /tmp/nginx_fastcgi_temp /tmp/nginx_uwsgi_temp /tmp/nginx_scgi_temp \
     && chown -R www-data:www-data /var/www/html \
+    && chown -R www-data:www-data /tmp/nginx_* \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache \
-    && chmod -R 755 /var/www/html/database
+    && chmod -R 755 /var/www/html/database \
+    && chmod -R 755 /tmp/nginx_*
 
 # Copy nginx configuration
 COPY docker/nginx.conf /etc/nginx/nginx.conf
