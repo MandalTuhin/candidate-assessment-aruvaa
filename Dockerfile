@@ -17,11 +17,16 @@ RUN apk add --no-cache \
     oniguruma-dev \
     curl
 
+RUN mkdir -p /var/log/supervisor /var/log/nginx /var/run/nginx
+
+RUN chown -R www-data:www-data /var/log/nginx /var/run/nginx
+
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
     pdo \
     pdo_sqlite \
+    pdo_mysql \
     mbstring \
     zip \
     exif \
