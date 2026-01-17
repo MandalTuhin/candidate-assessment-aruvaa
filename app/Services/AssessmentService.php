@@ -21,6 +21,8 @@ use Illuminate\Support\Collection;
  */
 class AssessmentService
 {
+    private const QUESTIONS_PER_ASSESSMENT = 10;
+
     public function __construct(
         private QuestionRepositoryInterface $questionRepository,
         private SessionService $sessionService,
@@ -35,7 +37,7 @@ class AssessmentService
      */
     public function getQuestionsForAssessment(array $languageIds): Collection
     {
-        return $this->questionRepository->getRandomQuestionsByLanguages($languageIds);
+        return $this->questionRepository->getRandomQuestionsByLanguages($languageIds, self::QUESTIONS_PER_ASSESSMENT);
     }
 
     /**
