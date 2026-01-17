@@ -51,6 +51,15 @@ if ! php artisan migrate --force --no-interaction; then
     echo "⚠️  Migration failed, but continuing..."
 fi
 
+# Run database seeders (only if not already seeded)
+echo "Checking if database needs seeding..."
+if ! php artisan tinker --execute="echo App\Models\Language::count();" 2>/dev/null | grep -q "^[1-9]"; then
+    echo "Seeding database..."
+    php artisan db:seed --force --no-interaction
+else
+    echo "Database already seeded, skipping..."
+fi
+
 # Optimize Laravel
 echo "Caching configuration..."
 php artisan config:cache
