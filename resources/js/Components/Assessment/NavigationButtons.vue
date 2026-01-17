@@ -1,6 +1,8 @@
 <template>
-    <div
+    <footer
         class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-0 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t"
+        role="navigation"
+        aria-label="Assessment navigation controls"
     >
         <button
             type="button"
@@ -13,6 +15,7 @@
                 'bg-gray-600 text-white hover:bg-gray-700 cursor-pointer':
                     canGoPrevious && !isLoading,
             }"
+            :aria-label="isLoading ? 'Loading previous question' : 'Go to previous question'"
         >
             <svg
                 v-if="isLoading"
@@ -20,6 +23,7 @@
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
             >
                 <circle
                     class="opacity-25"
@@ -42,6 +46,7 @@
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
+                aria-hidden="true"
             >
                 <path
                     stroke-linecap="round"
@@ -60,6 +65,7 @@
             @click="$emit('submit')"
             :disabled="isSubmitting"
             class="bg-red-600 text-white px-4 sm:px-6 py-2.5 sm:py-2 rounded font-bold hover:bg-red-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer touch-manipulation order-first sm:order-0"
+            :aria-label="isSubmitting ? 'Submitting assessment...' : 'Submit assessment for grading'"
         >
             <svg
                 v-if="isSubmitting"
@@ -67,6 +73,7 @@
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
             >
                 <circle
                     class="opacity-25"
@@ -98,6 +105,7 @@
                 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer':
                     canGoNext && !isLoading,
             }"
+            :aria-label="isLoading ? 'Loading next question' : 'Go to next question'"
         >
             <span class="text-sm sm:text-base">{{
                 isLoading ? "Loading..." : "Next"
@@ -109,6 +117,7 @@
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
+                aria-hidden="true"
             >
                 <path
                     stroke-linecap="round"
@@ -123,6 +132,7 @@
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
             >
                 <circle
                     class="opacity-25"
@@ -139,7 +149,7 @@
                 ></path>
             </svg>
         </button>
-    </div>
+    </footer>
 </template>
 
 <script setup>

@@ -1,13 +1,15 @@
 <template>
-    <div class="bg-gray-100 p-4 md:p-8 min-h-screen">
+    <main class="bg-gray-100 p-4 md:p-8 min-h-screen">
         <LoadingOverlay
             :is-loading="isPageLoading"
             message="Loading assessment..."
         />
 
-        <div
+        <section
             class="max-w-3xl mx-auto bg-white p-4 sm:p-6 rounded shadow"
             :class="{ 'opacity-50 pointer-events-none': isPageLoading }"
+            role="main"
+            aria-label="Technical assessment interface"
         >
             <Header
                 :current-question="currentQuestionIndex + 1"
@@ -21,37 +23,46 @@
                 :total-questions="totalQuestions"
             />
 
-            <MiniMap
-                :questions="questions"
-                :current-index="currentQuestionIndex"
-                @navigate="navigateToQuestion"
-            />
+            <nav aria-label="Question navigation">
+                <MiniMap
+                    :questions="questions"
+                    :current-index="currentQuestionIndex"
+                    @navigate="navigateToQuestion"
+                />
+            </nav>
 
             <Timer :time-remaining="timeRemaining" />
 
-            <form @submit.prevent="submitTest">
-                <QuestionCard
+            <form @submit.prevent="submitTest" role="form" aria-label="Assessment questions form">
+                <article
                     v-for="(question, index) in questions"
                     :key="question.id"
                     v-show="currentQuestionIndex === index"
-                    :question="question"
-                    :question-number="index + 1"
-                    @select="(option) => selectAnswer(question, option)"
-                    @clear="clearAnswer(question)"
-                />
+                    role="article"
+                    :aria-label="`Question ${index + 1} of ${totalQuestions}`"
+                >
+                    <QuestionCard
+                        :question="question"
+                        :question-number="index + 1"
+                        @select="(option) => selectAnswer(question, option)"
+                        @clear="clearAnswer(question)"
+                    />
+                </article>
 
-                <NavigationButtons
-                    :can-go-previous="currentQuestionIndex > 0"
-                    :can-go-next="currentQuestionIndex < questions.length - 1"
-                    :is-loading="isLoading"
-                    :is-submitting="isSubmitting"
-                    @previous="previousQuestion"
-                    @next="nextQuestion"
-                    @submit="submitTest"
-                />
+                <nav aria-label="Assessment navigation controls">
+                    <NavigationButtons
+                        :can-go-previous="currentQuestionIndex > 0"
+                        :can-go-next="currentQuestionIndex < questions.length - 1"
+                        :is-loading="isLoading"
+                        :is-submitting="isSubmitting"
+                        @previous="previousQuestion"
+                        @next="nextQuestion"
+                        @submit="submitTest"
+                    />
+                </nav>
             </form>
-        </div>
-    </div>
+        </section>
+    </main>
 </template>
 
 <script setup>

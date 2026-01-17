@@ -1,11 +1,12 @@
 <template>
-    <div
-        class="mb-4 sm:mb-6 bg-gray-50 border border-gray-200 rounded-lg overflow-hidden"
-    >
+    <section class="mb-4 sm:mb-6 bg-gray-50 border border-gray-200 rounded-lg overflow-hidden">
         <button
             type="button"
             @click.stop="miniMapOpen = !miniMapOpen"
             class="flex justify-between items-center w-full p-3 sm:p-4 sm:pb-3 sm:cursor-default sm:pointer-events-none cursor-pointer sm:mb-3"
+            :aria-expanded="miniMapOpen"
+            aria-controls="minimap-content"
+            :aria-label="miniMapOpen ? 'Collapse question navigator' : 'Expand question navigator'"
         >
             <span class="text-xs sm:text-sm font-medium text-gray-700"
                 >Question Navigator</span
@@ -21,6 +22,7 @@
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
+                    aria-hidden="true"
                 >
                     <path
                         stroke-linecap="round"
@@ -33,42 +35,48 @@
         </button>
 
         <!-- Desktop: Always visible -->
-        <div class="hidden sm:block sm:px-4 sm:pb-4">
-            <div class="grid grid-cols-5 sm:grid-cols-10 gap-2">
-                <button
-                    v-for="(question, index) in questions"
-                    :key="question.id"
-                    type="button"
-                    @click="$emit('navigate', index)"
-                    class="aspect-square cursor-pointer rounded-lg font-bold text-xs sm:text-sm transition-all duration-200 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-400 touch-manipulation"
-                    :class="{
-                        'bg-blue-600 text-white shadow-md':
-                            currentIndex === index,
-                        'bg-green-500 text-white':
-                            currentIndex !== index && question.selectedAnswer,
-                        'bg-gray-200 text-gray-600 hover:bg-gray-300':
-                            currentIndex !== index && !question.selectedAnswer,
-                    }"
-                    :title="`Question ${index + 1}${
-                        question.selectedAnswer
-                            ? ' (Answered)'
-                            : ' (Not answered)'
-                    }`"
-                >
-                    {{ index + 1 }}
-                </button>
-            </div>
-            <div class="flex flex-wrap gap-3 sm:gap-4 mt-3 text-xs">
+        <div class="hidden sm:block sm:px-4 sm:pb-4" id="minimap-content-desktop">
+            <nav aria-label="Question navigation grid">
+                <div class="grid grid-cols-5 sm:grid-cols-10 gap-2" role="grid">
+                    <button
+                        v-for="(question, index) in questions"
+                        :key="question.id"
+                        type="button"
+                        @click="$emit('navigate', index)"
+                        class="aspect-square cursor-pointer rounded-lg font-bold text-xs sm:text-sm transition-all duration-200 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-400 touch-manipulation"
+                        :class="{
+                            'bg-blue-600 text-white shadow-md':
+                                currentIndex === index,
+                            'bg-green-500 text-white':
+                                currentIndex !== index && question.selectedAnswer,
+                            'bg-gray-200 text-gray-600 hover:bg-gray-300':
+                                currentIndex !== index && !question.selectedAnswer,
+                        }"
+                        :title="`Question ${index + 1}${
+                            question.selectedAnswer
+                                ? ' (Answered)'
+                                : ' (Not answered)'
+                        }`"
+                        :aria-label="`Go to question ${index + 1}. ${
+                            currentIndex === index ? 'Currently selected. ' : ''
+                        }${question.selectedAnswer ? 'Answered' : 'Not answered'}`"
+                        role="gridcell"
+                    >
+                        {{ index + 1 }}
+                    </button>
+                </div>
+            </nav>
+            <div class="flex flex-wrap gap-3 sm:gap-4 mt-3 text-xs" role="legend" aria-label="Question status legend">
                 <div class="flex items-center gap-1.5">
-                    <div class="w-4 h-4 bg-blue-600 rounded"></div>
+                    <div class="w-4 h-4 bg-blue-600 rounded" aria-hidden="true"></div>
                     <span class="text-gray-600">Current</span>
                 </div>
                 <div class="flex items-center gap-1.5">
-                    <div class="w-4 h-4 bg-green-500 rounded"></div>
+                    <div class="w-4 h-4 bg-green-500 rounded" aria-hidden="true"></div>
                     <span class="text-gray-600">Answered</span>
                 </div>
                 <div class="flex items-center gap-1.5">
-                    <div class="w-4 h-4 bg-gray-200 rounded"></div>
+                    <div class="w-4 h-4 bg-gray-200 rounded" aria-hidden="true"></div>
                     <span class="text-gray-600">Not Answered</span>
                 </div>
             </div>
@@ -83,52 +91,58 @@
             leave-from-class="opacity-100 transform scale-y-100"
             leave-to-class="opacity-0 transform scale-y-0"
         >
-            <div v-show="miniMapOpen" class="sm:hidden origin-top">
+            <div v-show="miniMapOpen" class="sm:hidden origin-top" id="minimap-content">
                 <div class="px-3 pb-3 border-t border-gray-200">
-                    <div class="grid grid-cols-5 gap-2 mt-3 mb-3">
-                        <button
-                            v-for="(question, index) in questions"
-                            :key="question.id"
-                            type="button"
-                            @click="$emit('navigate', index)"
-                            class="aspect-square rounded-lg font-bold text-xs transition-all duration-200 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-400 touch-manipulation cursor-pointer"
-                            :class="{
-                                'bg-blue-600 text-white shadow-md':
-                                    currentIndex === index,
-                                'bg-green-500 text-white':
-                                    currentIndex !== index &&
-                                    question.selectedAnswer,
-                                'bg-gray-200 text-gray-600 hover:bg-gray-300':
-                                    currentIndex !== index &&
-                                    !question.selectedAnswer,
-                            }"
-                            :title="`Question ${index + 1}${
-                                question.selectedAnswer
-                                    ? ' (Answered)'
-                                    : ' (Not answered)'
-                            }`"
-                        >
-                            {{ index + 1 }}
-                        </button>
-                    </div>
-                    <div class="flex flex-wrap gap-2 text-xs">
+                    <nav aria-label="Mobile question navigation grid" class="mt-3">
+                        <div class="grid grid-cols-5 gap-2 mb-3" role="grid">
+                            <button
+                                v-for="(question, index) in questions"
+                                :key="question.id"
+                                type="button"
+                                @click="$emit('navigate', index)"
+                                class="aspect-square rounded-lg font-bold text-xs transition-all duration-200 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-400 touch-manipulation cursor-pointer"
+                                :class="{
+                                    'bg-blue-600 text-white shadow-md':
+                                        currentIndex === index,
+                                    'bg-green-500 text-white':
+                                        currentIndex !== index &&
+                                        question.selectedAnswer,
+                                    'bg-gray-200 text-gray-600 hover:bg-gray-300':
+                                        currentIndex !== index &&
+                                        !question.selectedAnswer,
+                                }"
+                                :title="`Question ${index + 1}${
+                                    question.selectedAnswer
+                                        ? ' (Answered)'
+                                        : ' (Not answered)'
+                                }`"
+                                :aria-label="`Go to question ${index + 1}. ${
+                                    currentIndex === index ? 'Currently selected. ' : ''
+                                }${question.selectedAnswer ? 'Answered' : 'Not answered'}`"
+                                role="gridcell"
+                            >
+                                {{ index + 1 }}
+                            </button>
+                        </div>
+                    </nav>
+                    <div class="flex flex-wrap gap-2 text-xs" role="legend" aria-label="Question status legend">
                         <div class="flex items-center gap-1">
-                            <div class="w-3 h-3 bg-blue-600 rounded"></div>
+                            <div class="w-3 h-3 bg-blue-600 rounded" aria-hidden="true"></div>
                             <span class="text-gray-600">Current</span>
                         </div>
                         <div class="flex items-center gap-1">
-                            <div class="w-3 h-3 bg-green-500 rounded"></div>
+                            <div class="w-3 h-3 bg-green-500 rounded" aria-hidden="true"></div>
                             <span class="text-gray-600">Answered</span>
                         </div>
                         <div class="flex items-center gap-1">
-                            <div class="w-3 h-3 bg-gray-200 rounded"></div>
+                            <div class="w-3 h-3 bg-gray-200 rounded" aria-hidden="true"></div>
                             <span class="text-gray-600">Not Answered</span>
                         </div>
                     </div>
                 </div>
             </div>
         </Transition>
-    </div>
+    </section>
 </template>
 
 <script setup>
