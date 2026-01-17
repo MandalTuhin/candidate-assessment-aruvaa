@@ -130,24 +130,20 @@ Route::get('/test-assessments', function () {
 
 // Test resume upload process
 Route::post('/test-resume-upload', function (\Illuminate\Http\Request $request) {
-    // Enable detailed error reporting
-    ini_set('display_errors', 1);
-    error_reporting(E_ALL);
+    $errorLog = [];
     
     try {
-        // Log the start
-        \Log::info('=== Test resume upload started ===');
-        \Log::info('Request files:', $request->allFiles());
-        \Log::info('Request data:', $request->all());
+        $errorLog[] = '=== Test resume upload started ===';
+        $errorLog[] = 'Files in request: ' . json_encode(array_keys($request->allFiles()));
         
         // Check if file exists
         if (!$request->hasFile('resume')) {
-            \Log::error('No resume file in request');
-            return response()->json(['error' => 'No resume file uploaded'], 400);
+            $errorLog[] = 'ERROR: No resume file in request';
+            return response()->json(['error' => 'No resume file uploaded', 'debug_log' => $errorLog], 400);
         }
         
         $file = $request->file('resume');
-        \Log::info('File object created successfully');
+        $errorLog[] = 'File object created successfully';
         
         // Get file details safely
         $fileDetails = [
@@ -158,43 +154,40 @@ Route::post('/test-resume-upload', function (\Illuminate\Http\Request $request) 
             'is_valid' => $file->isValid(),
             'error_code' => $file->getError(),
         ];
-        \Log::info('File details:', $fileDetails);
+        $errorLog[] = 'File details: ' . json_encode($fileDetails);
         
         // Test storage directory
         $storageDir = storage_path('app/public/resumes');
-        \Log::info('Storage directory check:', [
+        $storageInfo = [
             'path' => $storageDir,
             'exists' => is_dir($storageDir),
             'writable' => is_writable($storageDir),
-        ]);
+        ];
+        $errorLog[] = 'Storage directory: ' . json_encode($storageInfo);
         
         // Try simple file storage first
-        \Log::info('Attempting to store file...');
+        $errorLog[] = 'Attempting to store file...';
         $path = $file->store('test-resumes', 'public');
-        \Log::info('File stored successfully at: ' . $path);
+        $errorLog[] = 'File stored successfully at: ' . $path;
         
         // Check if file actually exists
         $fullPath = storage_path('app/public/' . $path);
         $fileExists = file_exists($fullPath);
-        \Log::info('File existence check:', [
-            'full_path' => $fullPath,
-            'exists' => $fileExists,
-            'size_on_disk' => $fileExists ? filesize($fullPath) : 'N/A'
-        ]);
+        $errorLog[] = 'File existence check: path=' . $fullPath . ', exists=' . ($fileExists ? 'yes' : 'no');
         
         // Try creating assessment (this might be the issue)
-        \Log::info('Creating test assessment...');
+        $errorLog[] = 'Creating test assessment...';
         $assessment = \App\Models\Assessment::create([
             'candidate_name' => 'Test User',
             'candidate_email' => 'test@example.com',
             'score' => 85,
         ]);
-        \Log::info('Assessment created with ID: ' . $assessment->id);
+        $errorLog[] = 'Assessment created with ID: ' . $assessment->id;
         
         // Update assessment with resume path
-        \Log::info('Updating assessment with resume path...');
+        $errorLog[] = 'Updating assessment with resume path...';
         $assessment->update(['resume_path' => $path]);
-        \Log::info('Assessment updated successfully');
+        $errorLog[] = 'Assessment updated successfully';
         
         return response()->json([
             'success' => true,
@@ -203,20 +196,34 @@ Route::post('/test-resume-upload', function (\Illuminate\Http\Request $request) 
             'file_details' => $fileDetails,
             'file_exists_on_disk' => $fileExists,
             'full_path' => $fullPath,
+            'debug_log' => $errorLog,
         ]);
         
     } catch (\Exception $e) {
-        \Log::error('=== Test resume upload FAILED ===');
-        \Log::error('Error message: ' . $e->getMessage());
-        \Log::error('Error file: ' . $e->getFile());
-        \Log::error('Error line: ' . $e->getLine());
-        \Log::error('Stack trace: ' . $e->getTraceAsString());
+        $errorLog[] = '=== EXCEPTION CAUGHT ===';
+        $errorLog[] = 'Error message: ' . $e->getMessage();
+        $errorLog[] = 'Error file: ' . $e->getFile();
+        $errorLog[] = 'Error line: ' . $e->getLine();
+        $errorLog[] = 'Error type: ' . get_class($e);
+        
+        // Try to log to Laravel log as well
+        try {
+            \Log::error('Test resume upload failed', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+        } catch (\Exception $logError) {
+            $errorLog[] = 'Failed to write to Laravel log: ' . $logError->getMessage();
+        }
         
         return response()->json([
             'error' => $e->getMessage(),
             'line' => $e->getLine(),
             'file' => basename($e->getFile()),
             'type' => get_class($e),
+            'debug_log' => $errorLog,
         ], 500);
     }
 });
@@ -245,25 +252,86 @@ Route::get('/upload-test-form', function () {
 // Check recent logs
 Route::get('/check-logs', function () {
     try {
-        $logFile = storage_path('logs/laravel.log');
-        if (!file_exists($logFile)) {
-            return response()->json(['error' => 'Log file not found']);
+        $logPaths = [
+            storage_path('logs/laravel.log'),
+            storage_path('logs/laravel-' . date('Y-m-d') . '.log'),
+            '/var/log/laravel.log',
+            '/tmp/laravel.log'
+        ];
+        
+        $logInfo = [];
+        foreach ($logPaths as $path) {
+            $logInfo[] = [
+                'path' => $path,
+                'exists' => file_exists($path),
+                'readable' => file_exists($path) && is_readable($path),
+                'size' => file_exists($path) ? filesize($path) : 0
+            ];
         }
         
-        // Get last 50 lines of log
-        $lines = file($logFile);
-        $recentLines = array_slice($lines, -50);
+        // Check storage/logs directory
+        $logsDir = storage_path('logs');
+        $logsDirInfo = [
+            'logs_dir_exists' => is_dir($logsDir),
+            'logs_dir_writable' => is_writable($logsDir),
+            'logs_dir_contents' => is_dir($logsDir) ? scandir($logsDir) : []
+        ];
         
-        return response('<html><head><title>Recent Logs</title></head><body style="font-family: monospace; padding: 20px;">
-            <h2>Recent Laravel Logs (Last 50 lines)</h2>
-            <pre style="background: #f5f5f5; padding: 15px; overflow-x: auto;">' . 
-            htmlspecialchars(implode('', $recentLines)) . 
-            '</pre>
+        // Try to find any log file
+        $foundLogFile = null;
+        $logContent = '';
+        
+        foreach ($logPaths as $path) {
+            if (file_exists($path) && is_readable($path)) {
+                $foundLogFile = $path;
+                $lines = file($path);
+                $logContent = implode('', array_slice($lines, -30)); // Last 30 lines
+                break;
+            }
+        }
+        
+        // If no file found, check if we can write to logs directory
+        if (!$foundLogFile && is_dir($logsDir) && is_writable($logsDir)) {
+            // Try to trigger a log entry
+            \Log::info('Test log entry from check-logs route');
+            
+            // Check again
+            foreach ($logPaths as $path) {
+                if (file_exists($path)) {
+                    $foundLogFile = $path;
+                    $lines = file($path);
+                    $logContent = implode('', array_slice($lines, -10));
+                    break;
+                }
+            }
+        }
+        
+        return response('<html><head><title>Log Check Results</title></head><body style="font-family: monospace; padding: 20px;">
+            <h2>Log File Investigation</h2>
+            
+            <h3>Log Paths Checked:</h3>
+            <pre>' . json_encode($logInfo, JSON_PRETTY_PRINT) . '</pre>
+            
+            <h3>Logs Directory Info:</h3>
+            <pre>' . json_encode($logsDirInfo, JSON_PRETTY_PRINT) . '</pre>
+            
+            <h3>Log Channel Configuration:</h3>
+            <pre>LOG_CHANNEL: ' . config('logging.default') . '
+LOG_LEVEL: ' . config('logging.level', 'debug') . '
+APP_ENV: ' . config('app.env') . '</pre>
+            
+            ' . ($foundLogFile ? '<h3>Recent Log Content (' . $foundLogFile . '):</h3>
+            <pre style="background: #f5f5f5; padding: 15px; max-height: 400px; overflow-y: auto;">' . 
+            htmlspecialchars($logContent) . '</pre>' : '<p><strong>No readable log file found</strong></p>') . '
+            
             <p><a href="/upload-test-form">← Back to Upload Test</a></p>
         </body></html>')->header('Content-Type', 'text/html');
         
     } catch (\Exception $e) {
-        return response()->json(['error' => $e->getMessage()]);
+        return response()->json([
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
     }
 });
 
