@@ -1,34 +1,40 @@
 <template>
-    <fieldset class="space-y-4 mb-6">
-        <legend class="text-sm font-medium text-gray-700 mb-3">
+    <fieldset class="mb-6 space-y-3 sm:space-y-4">
+        <legend class="text-sm font-medium text-gray-900 mb-4">
             Select Programming Languages (choose at least one):
         </legend>
-        <div
-            v-for="language in languages"
-            :key="language.id"
-            class="flex items-center"
-        >
-            <input
-                type="checkbox"
-                :id="`lang-${language.id}`"
-                :value="language.id"
-                :checked="selectedLanguages.includes(language.id)"
-                @change="toggleLanguage(language.id)"
-                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                :aria-describedby="`lang-${language.id}-desc`"
-            />
-            <label
-                :for="`lang-${language.id}`"
-                class="ml-3 text-gray-700 font-medium cursor-pointer"
+        <div class="space-y-3">
+            <div
+                v-for="language in languages"
+                :key="language.id"
+                class="relative flex items-start"
             >
-                {{ language.name }}
-            </label>
-            <span 
-                :id="`lang-${language.id}-desc`" 
-                class="sr-only"
-            >
-                {{ language.description || `${language.name} programming language` }}
-            </span>
+                <div class="flex h-6 items-center">
+                    <input
+                        type="checkbox"
+                        :id="`lang-${language.id}`"
+                        :value="language.id"
+                        :checked="selectedLanguages.includes(language.id)"
+                        @change="toggleLanguage(language.id)"
+                        class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600"
+                        :aria-describedby="`lang-${language.id}-desc`"
+                    />
+                </div>
+                <div class="ml-3 text-sm leading-6">
+                    <label
+                        :for="`lang-${language.id}`"
+                        class="font-medium text-gray-900 cursor-pointer"
+                    >
+                        {{ language.name }}
+                    </label>
+                    <span 
+                        :id="`lang-${language.id}-desc`" 
+                        class="sr-only"
+                    >
+                        {{ language.description || `${language.name} programming language` }}
+                    </span>
+                </div>
+            </div>
         </div>
     </fieldset>
 </template>

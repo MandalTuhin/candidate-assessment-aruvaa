@@ -1,20 +1,16 @@
 <template>
-    <section class="mb-4 sm:mb-6 bg-gray-50 border border-gray-200 rounded-lg overflow-hidden">
+    <section class="mb-6 overflow-hidden rounded-xl border border-gray-200 bg-gray-50">
         <button
             type="button"
             @click.stop="miniMapOpen = !miniMapOpen"
-            class="flex justify-between items-center w-full p-3 sm:p-4 sm:pb-3 sm:cursor-default sm:pointer-events-none cursor-pointer sm:mb-3"
+            class="flex w-full cursor-pointer items-center justify-between p-4 sm:cursor-default sm:pointer-events-none sm:pb-3"
             :aria-expanded="miniMapOpen"
             aria-controls="minimap-content"
             :aria-label="miniMapOpen ? 'Collapse question navigator' : 'Expand question navigator'"
         >
-            <span class="text-xs sm:text-sm font-medium text-gray-700"
-                >Question Navigator</span
-            >
+            <span class="text-sm font-medium text-gray-900">Question Navigator</span>
             <div class="flex items-center gap-2">
-                <span class="text-xs text-gray-500 hidden sm:inline"
-                    >Click to jump to question</span
-                >
+                <span class="hidden text-xs text-gray-500 sm:inline">Click to jump to question</span>
                 <svg
                     class="h-5 w-5 text-gray-600 transition-transform duration-200 sm:hidden"
                     :class="{ 'rotate-180': miniMapOpen }"
@@ -35,21 +31,21 @@
         </button>
 
         <!-- Desktop: Always visible -->
-        <div class="hidden sm:block sm:px-4 sm:pb-4" id="minimap-content-desktop">
+        <div class="hidden px-4 pb-4 sm:block" id="minimap-content-desktop">
             <nav aria-label="Question navigation grid">
-                <div class="grid grid-cols-5 sm:grid-cols-10 gap-2" role="grid">
+                <div class="grid grid-cols-8 gap-2 sm:grid-cols-10 lg:grid-cols-12" role="grid">
                     <button
                         v-for="(question, index) in questions"
                         :key="question.id"
                         type="button"
                         @click="$emit('navigate', index)"
-                        class="aspect-square cursor-pointer rounded-lg font-bold text-xs sm:text-sm transition-all duration-200 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-400 touch-manipulation"
+                        class="aspect-square rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:text-sm"
                         :class="{
-                            'bg-blue-600 text-white shadow-md':
+                            'bg-blue-600 text-white shadow-md focus-visible:outline-blue-600':
                                 currentIndex === index,
-                            'bg-green-500 text-white':
+                            'bg-green-500 text-white hover:bg-green-600 focus-visible:outline-green-600':
                                 currentIndex !== index && question.selectedAnswer,
-                            'bg-gray-200 text-gray-600 hover:bg-gray-300':
+                            'bg-gray-200 text-gray-700 hover:bg-gray-300 focus-visible:outline-gray-600':
                                 currentIndex !== index && !question.selectedAnswer,
                         }"
                         :title="`Question ${index + 1}${
@@ -66,18 +62,18 @@
                     </button>
                 </div>
             </nav>
-            <div class="flex flex-wrap gap-3 sm:gap-4 mt-3 text-xs" role="legend" aria-label="Question status legend">
-                <div class="flex items-center gap-1.5">
-                    <div class="w-4 h-4 bg-blue-600 rounded" aria-hidden="true"></div>
-                    <span class="text-gray-600">Current</span>
+            <div class="mt-4 flex flex-wrap gap-4 text-xs" role="legend" aria-label="Question status legend">
+                <div class="flex items-center gap-2">
+                    <div class="h-3 w-3 rounded bg-blue-600" aria-hidden="true"></div>
+                    <span class="text-gray-700">Current</span>
                 </div>
-                <div class="flex items-center gap-1.5">
-                    <div class="w-4 h-4 bg-green-500 rounded" aria-hidden="true"></div>
-                    <span class="text-gray-600">Answered</span>
+                <div class="flex items-center gap-2">
+                    <div class="h-3 w-3 rounded bg-green-500" aria-hidden="true"></div>
+                    <span class="text-gray-700">Answered</span>
                 </div>
-                <div class="flex items-center gap-1.5">
-                    <div class="w-4 h-4 bg-gray-200 rounded" aria-hidden="true"></div>
-                    <span class="text-gray-600">Not Answered</span>
+                <div class="flex items-center gap-2">
+                    <div class="h-3 w-3 rounded bg-gray-200" aria-hidden="true"></div>
+                    <span class="text-gray-700">Not Answered</span>
                 </div>
             </div>
         </div>
@@ -91,23 +87,23 @@
             leave-from-class="opacity-100 transform scale-y-100"
             leave-to-class="opacity-0 transform scale-y-0"
         >
-            <div v-show="miniMapOpen" class="sm:hidden origin-top" id="minimap-content">
-                <div class="px-3 pb-3 border-t border-gray-200">
-                    <nav aria-label="Mobile question navigation grid" class="mt-3">
-                        <div class="grid grid-cols-5 gap-2 mb-3" role="grid">
+            <div v-show="miniMapOpen" class="origin-top sm:hidden" id="minimap-content">
+                <div class="border-t border-gray-200 px-4 pb-4">
+                    <nav aria-label="Mobile question navigation grid" class="mt-4">
+                        <div class="mb-4 grid grid-cols-6 gap-2" role="grid">
                             <button
                                 v-for="(question, index) in questions"
                                 :key="question.id"
                                 type="button"
                                 @click="$emit('navigate', index)"
-                                class="aspect-square rounded-lg font-bold text-xs transition-all duration-200 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-400 touch-manipulation cursor-pointer"
+                                class="aspect-square rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                                 :class="{
-                                    'bg-blue-600 text-white shadow-md':
+                                    'bg-blue-600 text-white shadow-md focus-visible:outline-blue-600':
                                         currentIndex === index,
-                                    'bg-green-500 text-white':
+                                    'bg-green-500 text-white hover:bg-green-600 focus-visible:outline-green-600':
                                         currentIndex !== index &&
                                         question.selectedAnswer,
-                                    'bg-gray-200 text-gray-600 hover:bg-gray-300':
+                                    'bg-gray-200 text-gray-700 hover:bg-gray-300 focus-visible:outline-gray-600':
                                         currentIndex !== index &&
                                         !question.selectedAnswer,
                                 }"
@@ -125,18 +121,18 @@
                             </button>
                         </div>
                     </nav>
-                    <div class="flex flex-wrap gap-2 text-xs" role="legend" aria-label="Question status legend">
-                        <div class="flex items-center gap-1">
-                            <div class="w-3 h-3 bg-blue-600 rounded" aria-hidden="true"></div>
-                            <span class="text-gray-600">Current</span>
+                    <div class="flex flex-wrap gap-3 text-xs" role="legend" aria-label="Question status legend">
+                        <div class="flex items-center gap-1.5">
+                            <div class="h-3 w-3 rounded bg-blue-600" aria-hidden="true"></div>
+                            <span class="text-gray-700">Current</span>
                         </div>
-                        <div class="flex items-center gap-1">
-                            <div class="w-3 h-3 bg-green-500 rounded" aria-hidden="true"></div>
-                            <span class="text-gray-600">Answered</span>
+                        <div class="flex items-center gap-1.5">
+                            <div class="h-3 w-3 rounded bg-green-500" aria-hidden="true"></div>
+                            <span class="text-gray-700">Answered</span>
                         </div>
-                        <div class="flex items-center gap-1">
-                            <div class="w-3 h-3 bg-gray-200 rounded" aria-hidden="true"></div>
-                            <span class="text-gray-600">Not Answered</span>
+                        <div class="flex items-center gap-1.5">
+                            <div class="h-3 w-3 rounded bg-gray-200" aria-hidden="true"></div>
+                            <span class="text-gray-700">Not Answered</span>
                         </div>
                     </div>
                 </div>

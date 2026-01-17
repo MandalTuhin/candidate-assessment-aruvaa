@@ -1,11 +1,11 @@
 <template>
     <main
-        class="bg-gray-100 min-h-screen flex items-center justify-center p-3 sm:p-4"
+        class="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-6 sm:px-6 lg:px-8"
         role="main"
         aria-label="Assessment results"
     >
         <article
-            class="bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-lg w-full max-w-2xl text-center"
+            class="w-full max-w-2xl lg:max-w-4xl rounded-xl bg-white shadow-lg border border-gray-200 p-6 sm:p-8 lg:p-10 text-center"
         >
             <!-- Error Messages -->
             <section
@@ -13,13 +13,13 @@
                     $page.props.errors &&
                     Object.keys($page.props.errors).length > 0
                 "
-                class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"
+                class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-800"
                 role="alert"
                 aria-live="polite"
                 aria-label="Form validation errors"
             >
-                <ul>
-                    <li v-for="(error, key) in $page.props.errors" :key="key">
+                <ul class="space-y-1">
+                    <li v-for="(error, key) in $page.props.errors" :key="key" class="text-sm">
                         {{ error }}
                     </li>
                 </ul>
@@ -28,7 +28,7 @@
             <!-- Success Message -->
             <section
                 v-if="$page.props.flash?.success"
-                class="bg-green-500 text-white p-3 rounded mb-4"
+                class="mb-6 rounded-lg bg-green-600 p-4 text-white"
                 role="alert"
                 aria-live="polite"
                 aria-label="Success notification"
@@ -36,21 +36,21 @@
                 {{ $page.props.flash.success }}
             </section>
 
-            <header class="mb-4 sm:mb-6">
-                <h1 class="text-2xl sm:text-3xl font-bold mb-2">
+            <header class="mb-6 sm:mb-8">
+                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3">
                     Assessment Result
                 </h1>
-                <p class="text-sm sm:text-base text-gray-600 wrap-break-word">
+                <p class="text-sm sm:text-base lg:text-lg text-gray-600 break-words">
                     Prepared for: <strong>{{ candidateName }}</strong>
                 </p>
             </header>
 
             <section 
-                class="mb-4 sm:mb-6"
+                class="mb-6 sm:mb-8"
                 aria-label="Final score"
             >
                 <div
-                    class="text-5xl sm:text-6xl font-extrabold"
+                    class="text-5xl sm:text-6xl lg:text-7xl font-extrabold"
                     :class="passed ? 'text-green-600' : 'text-red-600'"
                     :aria-label="`Final score: ${score} percent. ${passed ? 'Passed' : 'Failed'}`"
                 >

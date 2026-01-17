@@ -1,6 +1,6 @@
 <template>
     <footer
-        class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-0 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t"
+        class="mt-6 sm:mt-8 flex flex-col gap-3 border-t border-gray-200 pt-6 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
         role="navigation"
         aria-label="Assessment navigation controls"
     >
@@ -8,18 +8,18 @@
             type="button"
             @click="$emit('previous')"
             :disabled="!canGoPrevious || isLoading"
-            class="px-4 sm:px-6 py-2.5 sm:py-2 rounded font-bold transition-colors flex items-center justify-center gap-2 touch-manipulation"
+            class="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold shadow-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:order-1"
             :class="{
-                'bg-gray-300 text-gray-500 cursor-not-allowed':
+                'bg-gray-100 text-gray-400 cursor-not-allowed':
                     !canGoPrevious || isLoading,
-                'bg-gray-600 text-white hover:bg-gray-700 cursor-pointer':
+                'bg-white text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-gray-600':
                     canGoPrevious && !isLoading,
             }"
             :aria-label="isLoading ? 'Loading previous question' : 'Go to previous question'"
         >
             <svg
                 v-if="isLoading"
-                class="animate-spin h-4 w-4"
+                class="h-4 w-4 animate-spin"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -55,21 +55,19 @@
                     d="M15 19l-7-7 7-7"
                 />
             </svg>
-            <span class="text-sm sm:text-base">{{
-                isLoading ? "Loading..." : "Previous"
-            }}</span>
+            {{ isLoading ? "Loading..." : "Previous" }}
         </button>
 
         <button
             type="button"
             @click="$emit('submit')"
             :disabled="isSubmitting"
-            class="bg-red-600 text-white px-4 sm:px-6 py-2.5 sm:py-2 rounded font-bold hover:bg-red-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer touch-manipulation order-first sm:order-0"
+            class="inline-flex items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 disabled:cursor-not-allowed disabled:opacity-50 sm:order-2"
             :aria-label="isSubmitting ? 'Submitting assessment...' : 'Submit assessment for grading'"
         >
             <svg
                 v-if="isSubmitting"
-                class="animate-spin h-4 w-4"
+                class="h-4 w-4 animate-spin"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -89,27 +87,23 @@
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 ></path>
             </svg>
-            <span class="text-sm sm:text-base">{{
-                isSubmitting ? "Submitting..." : "Submit Test"
-            }}</span>
+            {{ isSubmitting ? "Submitting..." : "Submit Test" }}
         </button>
 
         <button
             type="button"
             @click="$emit('next')"
             :disabled="!canGoNext || isLoading"
-            class="px-4 sm:px-6 py-2.5 sm:py-2 cursor-pointer rounded font-bold transition-colors flex items-center justify-center gap-2 touch-manipulation"
+            class="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold shadow-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:order-3"
             :class="{
-                'bg-gray-300 text-gray-500 cursor-not-allowed':
+                'bg-gray-100 text-gray-400 cursor-not-allowed':
                     !canGoNext || isLoading,
-                'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer':
+                'bg-blue-600 text-white hover:bg-blue-500 focus-visible:outline-blue-600':
                     canGoNext && !isLoading,
             }"
             :aria-label="isLoading ? 'Loading next question' : 'Go to next question'"
         >
-            <span class="text-sm sm:text-base">{{
-                isLoading ? "Loading..." : "Next"
-            }}</span>
+            {{ isLoading ? "Loading..." : "Next" }}
             <svg
                 v-if="!isLoading"
                 class="h-4 w-4"
@@ -128,7 +122,7 @@
             </svg>
             <svg
                 v-else
-                class="animate-spin h-4 w-4"
+                class="h-4 w-4 animate-spin"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"

@@ -1,15 +1,15 @@
 <template>
     <div
-        class="mb-6 sm:mb-8 bg-white rounded-lg border border-gray-300 shadow-sm overflow-hidden"
+        class="mb-6 sm:mb-8 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
     >
         <button
             @click="reviewOpen = !reviewOpen"
             type="button"
-            class="w-full flex items-center justify-between p-4 sm:p-5 text-left bg-linear-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 transition-all touch-manipulation border-b border-gray-200 cursor-pointer"
+            class="flex w-full cursor-pointer items-center justify-between border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-4 sm:p-6 text-left transition-all hover:from-blue-100 hover:to-indigo-100"
         >
             <div class="flex items-center gap-3">
                 <svg
-                    class="w-6 h-6 text-blue-600"
+                    class="h-6 w-6 text-blue-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -22,16 +22,16 @@
                     ></path>
                 </svg>
                 <div>
-                    <h2 class="text-lg sm:text-xl font-bold text-gray-800">
+                    <h2 class="text-lg sm:text-xl font-bold text-gray-900">
                         Review All Questions
                     </h2>
-                    <p class="text-xs sm:text-sm text-gray-600 mt-0.5">
+                    <p class="mt-1 text-xs sm:text-sm text-gray-600">
                         View your answers and correct solutions
                     </p>
                 </div>
             </div>
             <svg
-                class="w-6 h-6 text-gray-600 transition-transform duration-200"
+                class="h-6 w-6 text-gray-600 transition-transform duration-200"
                 :class="{ 'rotate-180': reviewOpen }"
                 fill="none"
                 stroke="currentColor"
@@ -54,24 +54,24 @@
             leave-from-class="opacity-100"
             leave-to-class="opacity-0"
         >
-            <div v-show="reviewOpen" class="p-4 sm:p-5 bg-gray-50">
-                <div class="space-y-5 sm:space-y-6">
+            <div v-show="reviewOpen" class="bg-gray-50 p-4 sm:p-6">
+                <div class="space-y-4 sm:space-y-6">
                     <div
                         v-for="question in questions"
                         :key="question.question_number"
-                        class="bg-white rounded-lg border-l-4 shadow-sm overflow-hidden"
+                        class="overflow-hidden rounded-lg border-l-4 bg-white shadow-sm"
                         :class="{
                             'border-green-500': question.status === 'correct',
                             'border-red-500': question.status === 'incorrect',
                             'border-yellow-500': question.status === 'skipped',
                         }"
                     >
-                        <div class="p-3 sm:p-4">
-                            <div class="flex items-start justify-between mb-2">
+                        <div class="p-4 sm:p-6">
+                            <div class="mb-4 flex items-start justify-between">
                                 <div class="flex-1">
-                                    <div class="flex items-center gap-2 mb-1">
+                                    <div class="mb-2 flex items-center gap-2">
                                         <span
-                                            class="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold"
+                                            class="inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold"
                                             :class="{
                                                 'bg-green-100 text-green-700':
                                                     question.status ===
@@ -87,22 +87,22 @@
                                             {{ question.question_number }}
                                         </span>
                                         <span
-                                            class="text-xs font-mono text-blue-600 bg-blue-50 px-2 py-0.5 rounded"
+                                            class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10"
                                         >
-                                            [{{ question.language_name }}]
+                                            {{ question.language_name }}
                                         </span>
                                     </div>
                                     <p
-                                        class="font-semibold text-sm sm:text-base mt-4 mb-2 text-gray-800 wrap-break-word"
+                                        class="mt-2 text-sm sm:text-base font-semibold text-gray-900 break-words leading-relaxed"
                                     >
                                         {{ question.question_text }}
                                     </p>
                                 </div>
-                                <div class="ml-3">
+                                <div class="ml-4">
                                     <!-- Correct Icon -->
                                     <svg
                                         v-if="question.status === 'correct'"
-                                        class="w-6 h-6 text-green-600"
+                                        class="h-6 w-6 text-green-600"
                                         fill="currentColor"
                                         viewBox="0 0 20 20"
                                     >
@@ -117,7 +117,7 @@
                                         v-else-if="
                                             question.status === 'incorrect'
                                         "
-                                        class="w-6 h-6 text-red-600"
+                                        class="h-6 w-6 text-red-600"
                                         fill="currentColor"
                                         viewBox="0 0 20 20"
                                     >
@@ -130,7 +130,7 @@
                                     <!-- Skipped Icon -->
                                     <svg
                                         v-else
-                                        class="w-6 h-6 text-yellow-600"
+                                        class="h-6 w-6 text-yellow-600"
                                         fill="currentColor"
                                         viewBox="0 0 20 20"
                                     >
@@ -143,17 +143,17 @@
                                 </div>
                             </div>
 
-                            <div class="mt-3 space-y-2">
+                            <div class="space-y-3">
                                 <!-- Skipped Question -->
                                 <div
                                     v-if="question.status === 'skipped'"
-                                    class="p-2.5 sm:p-3 bg-yellow-50 border border-yellow-200 rounded-md"
+                                    class="rounded-lg border border-yellow-200 bg-yellow-50 p-3 sm:p-4"
                                 >
                                     <span
                                         class="text-xs sm:text-sm font-medium text-yellow-800"
                                     >
                                         <svg
-                                            class="w-4 h-4 inline mr-1"
+                                            class="mr-1 inline h-4 w-4"
                                             fill="currentColor"
                                             viewBox="0 0 20 20"
                                         >
@@ -170,7 +170,7 @@
                                 <!-- User Answer (for answered questions) -->
                                 <div
                                     v-else
-                                    class="p-2.5 sm:p-3 rounded-md"
+                                    class="rounded-lg p-3 sm:p-4"
                                     :class="{
                                         'bg-green-50 border border-green-200':
                                             question.status === 'correct',
@@ -190,7 +190,7 @@
                                         Your Answer:
                                     </span>
                                     <span
-                                        class="ml-2 text-sm sm:text-base font-semibold"
+                                        class="ml-2 text-sm sm:text-base font-semibold break-words"
                                         :class="{
                                             'text-green-800':
                                                 question.status === 'correct',
@@ -205,14 +205,14 @@
                                 <!-- Correct Answer (for incorrect/skipped questions) -->
                                 <div
                                     v-if="question.status !== 'correct'"
-                                    class="p-2.5 sm:p-3 bg-green-50 border border-green-200 rounded-md"
+                                    class="rounded-lg border border-green-200 bg-green-50 p-3 sm:p-4"
                                 >
                                     <span
                                         class="text-xs sm:text-sm font-medium text-green-700"
                                         >Correct Answer:</span
                                     >
                                     <span
-                                        class="ml-2 text-sm sm:text-base font-semibold text-green-800"
+                                        class="ml-2 text-sm sm:text-base font-semibold text-green-800 break-words"
                                     >
                                         {{ question.correct_answer }}
                                     </span>
