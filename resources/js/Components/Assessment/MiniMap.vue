@@ -1,9 +1,9 @@
 <template>
-    <div class="mb-4 sm:mb-6 bg-gray-50 border border-gray-200 rounded-lg">
+    <div class="mb-4 sm:mb-6 bg-gray-50 border border-gray-200 rounded-lg overflow-hidden">
         <button
             type="button"
             @click.stop="miniMapOpen = !miniMapOpen"
-            class="flex justify-between items-center w-full p-3 sm:p-4 sm:pb-3 sm:cursor-default sm:pointer-events-none mb-3 cursor-pointer"
+            class="flex justify-between items-center w-full p-3 sm:p-4 sm:pb-3 sm:cursor-default sm:pointer-events-none cursor-pointer sm:mb-3"
         >
             <span class="text-xs sm:text-sm font-medium text-gray-700"
                 >Question Navigator</span
@@ -81,45 +81,47 @@
             leave-from-class="opacity-100 transform scale-y-100"
             leave-to-class="opacity-0 transform scale-y-0"
         >
-            <div v-show="miniMapOpen" class="sm:hidden origin-top px-3 pb-3">
-                <div class="grid grid-cols-5 gap-2">
-                    <button
-                        v-for="(question, index) in questions"
-                        :key="question.id"
-                        type="button"
-                        @click="$emit('navigate', index)"
-                        class="aspect-square rounded-lg font-bold text-xs transition-all duration-200 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-400 touch-manipulation cursor-pointer"
-                        :class="{
-                            'bg-blue-600 text-white shadow-md':
-                                currentIndex === index,
-                            'bg-green-500 text-white':
-                                currentIndex !== index &&
-                                question.selectedAnswer,
-                            'bg-gray-200 text-gray-600 hover:bg-gray-300':
-                                currentIndex !== index &&
-                                !question.selectedAnswer,
-                        }"
-                        :title="`Question ${index + 1}${
-                            question.selectedAnswer
-                                ? ' (Answered)'
-                                : ' (Not answered)'
-                        }`"
-                    >
-                        {{ index + 1 }}
-                    </button>
-                </div>
-                <div class="flex flex-wrap gap-3 mt-3 text-xs">
-                    <div class="flex items-center gap-1.5">
-                        <div class="w-4 h-4 bg-blue-600 rounded"></div>
-                        <span class="text-gray-600">Current</span>
+            <div v-show="miniMapOpen" class="sm:hidden origin-top">
+                <div class="px-3 pb-3 border-t border-gray-200">
+                    <div class="grid grid-cols-5 gap-2 mt-3 mb-3">
+                        <button
+                            v-for="(question, index) in questions"
+                            :key="question.id"
+                            type="button"
+                            @click="$emit('navigate', index)"
+                            class="aspect-square rounded-lg font-bold text-xs transition-all duration-200 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-400 touch-manipulation cursor-pointer"
+                            :class="{
+                                'bg-blue-600 text-white shadow-md':
+                                    currentIndex === index,
+                                'bg-green-500 text-white':
+                                    currentIndex !== index &&
+                                    question.selectedAnswer,
+                                'bg-gray-200 text-gray-600 hover:bg-gray-300':
+                                    currentIndex !== index &&
+                                    !question.selectedAnswer,
+                            }"
+                            :title="`Question ${index + 1}${
+                                question.selectedAnswer
+                                    ? ' (Answered)'
+                                    : ' (Not answered)'
+                            }`"
+                        >
+                            {{ index + 1 }}
+                        </button>
                     </div>
-                    <div class="flex items-center gap-1.5">
-                        <div class="w-4 h-4 bg-green-500 rounded"></div>
-                        <span class="text-gray-600">Answered</span>
-                    </div>
-                    <div class="flex items-center gap-1.5">
-                        <div class="w-4 h-4 bg-gray-200 rounded"></div>
-                        <span class="text-gray-600">Not Answered</span>
+                    <div class="flex flex-wrap gap-2 text-xs">
+                        <div class="flex items-center gap-1">
+                            <div class="w-3 h-3 bg-blue-600 rounded"></div>
+                            <span class="text-gray-600">Current</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <div class="w-3 h-3 bg-green-500 rounded"></div>
+                            <span class="text-gray-600">Answered</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <div class="w-3 h-3 bg-gray-200 rounded"></div>
+                            <span class="text-gray-600">Not Answered</span>
+                        </div>
                     </div>
                 </div>
             </div>
