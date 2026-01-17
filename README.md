@@ -18,7 +18,7 @@
 - 🌐 **Portfolio:** [tuhin-mandal-portfolio.vercel.app](https://tuhin-mandal-portfolio.vercel.app/)
 - 🐙 **GitHub:** [github.com/MandalTuhin](https://github.com/MandalTuhin)
 - 💼 **LinkedIn:** [linkedin.com/in/tuhin-mandal-2157102aa](https://www.linkedin.com/in/tuhin-mandal-2157102aa/)
-- 🌐 **Repository:** [github.com/MandalTuhin/candidate-assesment-aruvaa](https://github.com/MandalTuhin/candidate-assesment-aruvaa/)
+- 🌐 **Repository:** [github.com/MandalTuhin/candidate-assessment-aruvaa](https://github.com/MandalTuhin/candidate-assessment-aruvaa/)
 
 ---
 
@@ -48,18 +48,18 @@
 
 ### **Option 1: One-Command Setup**
 ```bash
-git clone https://github.com/MandalTuhin/candidate-assesment-aruvaa.git && cd candidate-assessment
+git clone https://github.com/MandalTuhin/candidate-assessment-aruvaa.git && cd candidate-assessment-aruvaa
 composer install && npm install
 cp .env.example .env && php artisan key:generate
-php artisan migrate:fresh --seed && npm run build
+touch database/database.sqlite && php artisan migrate:fresh --seed && npm run build
 php artisan serve
 ```
 
 ### **Option 2: Step-by-Step Setup**
 ```bash
 # 1. Clone and install dependencies
-git clone https://github.com/MandalTuhin/candidate-assesment-aruvaa.git
-cd candidate-assessment
+git clone https://github.com/MandalTuhin/candidate-assessment-aruvaa.git
+cd candidate-assessment-aruvaa
 composer install
 npm install
 
@@ -67,17 +67,57 @@ npm install
 cp .env.example .env
 php artisan key:generate
 
-# 3. Database setup with sample data
+# 3. Create SQLite database file
+touch database/database.sqlite
+
+# 4. Database setup with sample data
 php artisan migrate:fresh --seed
 
-# 4. Build frontend assets
+# 5. Build frontend assets
 npm run build
 
-# 5. Start the application
+# 6. Start the application
 php artisan serve
 ```
 
 **🌐 Access the application at:** `http://localhost:8000`
+
+---
+
+## 🔧 Troubleshooting
+
+### **Common Setup Issues**
+
+#### **SQLite Database Error**
+If you encounter "Database file does not exist" error:
+```bash
+# Create the SQLite database file
+touch database/database.sqlite
+
+# Then run migrations
+php artisan migrate:fresh --seed
+```
+
+#### **Permission Issues (Linux/Mac)**
+```bash
+# Fix storage permissions
+chmod -R 775 storage bootstrap/cache
+```
+
+#### **Node.js Build Issues**
+```bash
+# Clear npm cache and reinstall
+npm cache clean --force
+rm -rf node_modules package-lock.json
+npm install
+npm run build
+```
+
+#### **Laravel Key Missing**
+```bash
+# Generate application key
+php artisan key:generate
+```
 
 ---
 
@@ -569,9 +609,9 @@ For any questions, feedback, or technical support regarding this assessment syst
 - 💼 **LinkedIn:** [linkedin.com/in/tuhin-mandal-2157102aa](https://www.linkedin.com/in/tuhin-mandal-2157102aa/)
 
 ### **Repository Information**
-- 🌐 **Project Repository:** [github.com/MandalTuhin/candidate-assesment-aruvaa](https://github.com/MandalTuhin/candidate-assesment-aruvaa/)
-- 📋 **Issues & Bug Reports:** [Submit an Issue](https://github.com/MandalTuhin/candidate-assesment-aruvaa/issues)
-- 🔄 **Pull Requests:** [Contribute](https://github.com/MandalTuhin/candidate-assesment-aruvaa/pulls)
+- 🌐 **Project Repository:** [github.com/MandalTuhin/candidate-assessment-aruvaa](https://github.com/MandalTuhin/candidate-assessment-aruvaa/)
+- 📋 **Issues & Bug Reports:** [Submit an Issue](https://github.com/MandalTuhin/candidate-assessment-aruvaa/issues)
+- 🔄 **Pull Requests:** [Contribute](https://github.com/MandalTuhin/candidate-assessment-aruvaa/pulls)
 
 ### **Assignment Compliance**
 This application fully meets all assignment requirements including:
