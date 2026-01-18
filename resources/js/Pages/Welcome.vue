@@ -56,9 +56,14 @@
 
                 <button
                     type="submit"
-                    :disabled="form.processing || languages.length === 0"
-                    class="w-full rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
-                    :aria-label="languages.length === 0 ? 'Loading languages...' : 'Start technical assessment'"
+                    :disabled="form.processing || languages.length === 0 || !isFormValid"
+                    :class="[
+                        'w-full rounded-lg px-4 py-3 text-sm font-semibold shadow-sm transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600',
+                        isFormValid && !form.processing && languages.length > 0
+                            ? 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
+                            : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'
+                    ]"
+                    :aria-label="languages.length === 0 ? 'Loading languages...' : !isFormValid ? 'Please fill in all required information' : 'Start technical assessment'"
                 >
                     <span v-if="!form.processing">
                         {{ languages.length === 0 ? 'Loading...' : 'Start Test' }}
@@ -71,6 +76,7 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
 import { useForm } from "@inertiajs/vue3";
 import LanguageSelector from "@/Components/Welcome/LanguageSelector.vue";
 import CandidateForm from "@/Components/Welcome/CandidateForm.vue";
@@ -84,6 +90,12 @@ const form = useForm({
     name: "",
     email: "",
     languages: [],
+});
+
+const isFormValid = computed(() => {
+    return form.name.trim() !== "" && 
+           form.email.trim() !== "" && 
+           form.languages.length > 0;
 });
 
 const toggleLanguage = (languageId) => {
