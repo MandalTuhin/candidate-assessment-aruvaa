@@ -64,6 +64,8 @@ else
 fi
 
 # Optimize Laravel (but don't fail if it doesn't work)
+echo "Clearing configuration cache..."
+php artisan config:clear || echo "⚠️  Config clear failed"
 echo "Caching configuration..."
 php artisan config:cache || echo "⚠️  Config cache failed"
 php artisan route:cache || echo "⚠️  Route cache failed"
