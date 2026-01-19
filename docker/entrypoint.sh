@@ -15,19 +15,14 @@ if [ -z "$APP_KEY" ]; then
     exit 1
 fi
 
-# Force HTTPS for all URLs in production (only if FORCE_HTTPS is not explicitly set to false)
-if [ "$APP_ENV" = "production" ] && [ "$FORCE_HTTPS" != "false" ]; then
-    # Only set Railway URLs if ASSET_URL is not already set
-    if [ -z "$ASSET_URL" ]; then
-        export ASSET_URL="https://candidate-asesment-aruvaa-production.up.railway.app"
-        echo "Setting ASSET_URL to: $ASSET_URL"
-    fi
-    if [ -z "$APP_URL" ] || [ "$APP_URL" = "not_set" ]; then
-        export APP_URL="https://candidate-asesment-aruvaa-production.up.railway.app"
-        echo "Setting APP_URL to: $APP_URL"
-    fi
-    export FORCE_HTTPS="true"
-    echo "Forcing HTTPS for all URLs"
+# Force HTTP URLs when FORCE_HTTPS is false
+if [ "$FORCE_HTTPS" = "false" ]; then
+    echo "Forcing HTTP URLs for all Laravel URL generation..."
+    php artisan tinker --execute="
+        \Illuminate\Support\Facades\URL::forceScheme('http');
+        \Illuminate\Support\Facades\URL::forceRootUrl('$APP_URL');
+        echo 'URL scheme forced to HTTP';
+    " || echo "⚠️  URL forcing failed"
 fi
 
 # Create database directory and file for SQLite
