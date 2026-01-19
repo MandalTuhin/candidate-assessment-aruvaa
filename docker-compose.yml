@@ -1,23 +1,41 @@
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/mandaltuhin/candidate-assessment-aruvaa:latest
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
     ports:
       - "8080:8080"
     environment:
-      - APP_NAME=Laravel
-      - APP_ENV=local
+      - APP_NAME=${APP_NAME:-Laravel}
+      - APP_ENV=${APP_ENV:-production}
       - APP_KEY=${APP_KEY:-base64:W/BWX7JJyLGF1ZIh0QId6UPcvUN6uAhynzUxbRyvUNQ=}
-      - APP_DEBUG=true
-      - APP_URL=http://localhost:8080
-      - DB_CONNECTION=sqlite
-      - SESSION_DRIVER=database
-      - QUEUE_CONNECTION=database
-      - CACHE_STORE=database
-      - LOG_CHANNEL=stack
-      - LOG_LEVEL=debug
+      - APP_DEBUG=${APP_DEBUG:-false}
+      - APP_URL=${APP_URL:-http://localhost:8080}
+      - DB_CONNECTION=${DB_CONNECTION:-sqlite}
+      - DB_DATABASE=${DB_DATABASE:-/var/www/html/database/database.sqlite}
+      - SESSION_DRIVER=${SESSION_DRIVER:-database}
+      - QUEUE_CONNECTION=${QUEUE_CONNECTION:-database}
+      - CACHE_STORE=${CACHE_STORE:-database}
+      - LOG_CHANNEL=${LOG_CHANNEL:-stack}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - MAIL_MAILER=${MAIL_MAILER:-log}
     volumes:
-      - ./database:/var/www/html/database
-      - ./storage:/var/www/html/storage
+      - app_database:/var/www/html/database
+      - app_storage:/var/www/html/storage
+      - app_logs:/var/log
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  app_database:
+    driver: local
+  app_storage:
+    driver: local
+  app_logs:
+    driver: local
