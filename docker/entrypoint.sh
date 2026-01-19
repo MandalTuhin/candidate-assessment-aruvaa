@@ -15,13 +15,18 @@ if [ -z "$APP_KEY" ]; then
     exit 1
 fi
 
-# Force HTTPS for all URLs in production
-if [ "$APP_ENV" = "production" ]; then
-    export ASSET_URL="https://candidate-asesment-aruvaa-production.up.railway.app"
-    export APP_URL="https://candidate-asesment-aruvaa-production.up.railway.app"
+# Force HTTPS for all URLs in production (only if FORCE_HTTPS is not explicitly set to false)
+if [ "$APP_ENV" = "production" ] && [ "$FORCE_HTTPS" != "false" ]; then
+    # Only set Railway URLs if ASSET_URL is not already set
+    if [ -z "$ASSET_URL" ]; then
+        export ASSET_URL="https://candidate-asesment-aruvaa-production.up.railway.app"
+        echo "Setting ASSET_URL to: $ASSET_URL"
+    fi
+    if [ -z "$APP_URL" ] || [ "$APP_URL" = "not_set" ]; then
+        export APP_URL="https://candidate-asesment-aruvaa-production.up.railway.app"
+        echo "Setting APP_URL to: $APP_URL"
+    fi
     export FORCE_HTTPS="true"
-    echo "Setting ASSET_URL to: $ASSET_URL"
-    echo "Setting APP_URL to: $APP_URL"
     echo "Forcing HTTPS for all URLs"
 fi
 
